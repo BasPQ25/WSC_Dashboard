@@ -21,6 +21,7 @@
 void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c
 void Error_handler(void); //see in tasks/error.c
 void Software_config(void); //see in tasks/software_config.c
+void Error_handlers(void);
 
 /*END FUNCTION PROTOTYPES */
 
