@@ -14,12 +14,13 @@ void Display_handler(void);
 void Display_Init(void);
 void Display_can_erros(void);
 
-enum display { SPEED_DISPLAY = 0,
+enum display
+{
+	SPEED_DISPLAY = 0,
 #if (CAN_DEBUG == 1)
 			   CAN_DISPLAY,
 #endif
-			   MPPT_DISPLAY,
-			   MAX_DISPLAY
+	MPPT_DISPLAY, MAX_DISPLAY
 };
 
 #if (CAN_DEBUG == 1)

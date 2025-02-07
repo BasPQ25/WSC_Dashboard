@@ -7,23 +7,22 @@ struct can_bus_errors can_errors =
 
 struct can_bus_errors *const p_can_errors = &can_errors;
 
-struct Data_aquisition_can can_data = { .bus_current = 0,
-										.bus_voltage = 0
+struct Data_aquisition_can can_data =
+{ .bus_current = 0, .bus_voltage = 0
 
 };
 
-struct Data_aquisition_can* const p_can_data = &can_data;
+struct Data_aquisition_can *const p_can_data = &can_data;
 
 extern QueueHandle_t Can_Queue;
-
 
 /*VARIABLE USED FOR CAN DATA AQUISITION START */
 
 static uint32_t bus_current = 0;
-float* const p_bus_current = (float*) &bus_current;
+float *const p_bus_current = (float*) &bus_current;
 
 static uint32_t bus_voltage = 0;
-float* const p_bus_voltage = (float*) &bus_voltage;
+float *const p_bus_voltage = (float*) &bus_voltage;
 
 /*VARIABLE USED FOR CAN DATA AQUISITON END */
 
@@ -44,17 +43,20 @@ void Can_msg_handler()
 		{
 			switch (msg.Identifier)
 			{
-				/* INVERTOR INCOMING ADRESSES */
-				case INV_TX_STATUS_INFO:
+			/* INVERTOR INCOMING ADRESSES */
+			case INV_TX_STATUS_INFO:
 //					XTaskNotify(Error_handler)
-					break;
-				case INV_TX_BUS_MEASUREMENT:
+				break;
+			case INV_TX_BUS_MEASUREMENT:
 
-					memcpy(&p_can_data->bus_current, (float*)msg.data, sizeof(float));
-					memcpy(&p_can_data->bus_voltage, (float*)&msg.data[4], sizeof(float));
+				memcpy(&p_can_data->bus_current, (float*) msg.data,
+						sizeof(float));
+				memcpy(&p_can_data->bus_voltage, (float*) &msg.data[4],
+						sizeof(float));
 
-					break;
-				default: break;
+				break;
+			default:
+				break;
 			}
 		}
 		else
