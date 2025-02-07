@@ -17,6 +17,7 @@
 /*USER DEFINES HERE*/
 
 #define SEGGER_DEBUG_PROBE 1 //for debugging with segger
+#define TESTING_FOR_DEBUG 1
 
 /*END USER DEFINES*/
 

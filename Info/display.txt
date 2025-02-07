@@ -1,0 +1,4 @@
+Pentru display s-a pus un delay la inceputul codului,
+chiar la intrare in int main,
+si s-a pus in hardfault handler un NVIC_Systemreset(),
+Asta a fost solutia noastra pentru a porni lcd-ul fara sa dam restart sistemului
