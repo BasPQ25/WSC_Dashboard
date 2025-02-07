@@ -32,8 +32,12 @@ void Can_msg_handler()
 {
 	struct Queue_Can_Msg msg;
 
+	/******************TASK CODE STARTS HERE ************************************/
 	while ( pdTRUE)
 	{
+#if (SEGGER_DEBUG_PROBE == 1)
+		SEGGER_SYSVIEW_MarkStart(1);
+#endif
 
 #if (CAN_DEBUG == 1)
 		void can_status_recording();
@@ -68,9 +72,79 @@ void Can_msg_handler()
 		}
 
 	}
+	/******************TASK CODE END HERE ************************************/
 }
 
 /*CAN MESSAGE TASK END HERE*/
+
+/*CAN TRANSMIT TASK START HERE */
+
+void Can_transmit_handler()
+{
+	const CAN_TxHeaderTypeDef inv_motor_drive_header =
+	{ INV_RX_MOTOR_DRIVE, 0x00, CAN_RTR_DATA, CAN_ID_STD, 8, DISABLE };
+	const CAN_TxHeaderTypeDef bms_state_control_header =
+	{ BMS_RX_STATE_CONTROL, 0x00, CAN_RTR_DATA, CAN_ID_STD, 8, DISABLE };
+	const CAN_TxHeaderTypeDef aux_header =
+	{ AUXILIARY_CONTROL, 0x00, CAN_RTR_DATA, CAN_ID_STD, 1, DISABLE };
+
+	uint32_t inv_mailbox;
+	uint32_t bms_mailbox;
+	uint32_t aux_mailbox;
+
+	TickType_t xLastWakeTime;
+	const TickType_t xPeriod = pdMS_TO_TICKS(100);
+	xLastWakeTime = xTaskGetTickCount();
+
+#if (SEGGER_DEBUG_PROBE == 1)
+	SEGGER_SYSVIEW_NameMarker(2, "Transmit time consumed");
+#endif
+
+	/******************TASK CODE STARTS HERE ************************************/
+	while ( pdTRUE)
+	{
+#if (SEGGER_DEBUG_PROBE == 1)
+		SEGGER_SYSVIEW_MarkStart(2);
+#endif
+
+		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
+#if (CAN_DEBUG == 1)
+		uint8_t p_inv_data[] =
+		{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		uint8_t p_bms_data[] =
+		{ 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }; //accesories
+		uint8_t p_aux_data[] =
+		{ 0x00 };
+
+#endif
+		if (HAL_CAN_AddTxMessage(&hcan, &inv_motor_drive_header, p_inv_data,
+				&inv_mailbox) != HAL_OK)
+		{
+			Error_Handler(); //Trebuie pus un task de error handling
+
+		}
+//		 BMS COMMANDS
+		if (HAL_CAN_AddTxMessage(&hcan, &bms_state_control_header, p_bms_data,
+				&bms_mailbox) != HAL_OK)
+		{
+			Error_Handler(); //Trebuie pus un task de error handling
+		}
+
+//		AUX status
+		if (HAL_CAN_AddTxMessage(&hcan, &aux_header, p_aux_data, &aux_mailbox)
+				!= HAL_OK)
+		{
+			Error_Handler(); //Trebuie pus un task de error handling
+		}
+#if (SEGGER_DEBUG_PROBE == 1)
+		SEGGER_SYSVIEW_MarkStop(2);
+#endif
+	}
+	/******************TASK CODE END HERE ************************************/
+}
+
+/*CAN TRANSMIT TASK END HERE*/
 
 /* CAN INTERRUPT STARTS HERE */
 

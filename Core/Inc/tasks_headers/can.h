@@ -15,6 +15,7 @@
 void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c
 void can_status_recording(void); //see in tasks/can.c
 void Can_msg_handler(void);
+void Can_transmit_handler(void);
 
 struct can_bus_errors
 {
@@ -60,9 +61,11 @@ struct Data_aquisition_can
  *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
  *  TX = INVERTOR TRANSMITS A MESSAGE, SO DASHBOARD/VCU RECEIVES
  */
-#define BMU_HEARTHBEAT 0x600 // 1 sec
-#define BMU_SOC        0X6F4 // 1 sec
-#define BMU_STATUS     0x6F7 // 1 sec
+#define BMS_RX_STATE_CONTROL 0x505 //100ms
+
+#define BMU_TX_HEARTHBEAT 0x600 // 1 sec
+#define BMU_TX_SOC        0X6F4 // 1 sec
+#define BMU_TX_STATUS     0x6F7 // 1 sec
 
 #define CMU1_HEARTHBEAT //INTREABA l pe stefan cat e
 
@@ -85,5 +88,11 @@ struct Data_aquisition_can
 #define MPPT3_STATUS ( MPPT3_ADDR + 0X01) // 1 second
 
 /*MPPT SIGNAL END HERE */
+
+/*AUXILIARY SIGNAL START HERE */
+
+#define AUXILIARY_CONTROL 0X701
+
+/*AUXILIARY SIGNAL END HERE */
 
 #endif /* INC_TASKS_HEADERS_CAN_H_ */

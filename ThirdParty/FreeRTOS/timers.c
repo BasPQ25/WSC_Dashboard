@@ -820,7 +820,7 @@ static void prvProcessReceivedCommands(void)
 					if ((pxTimer->ucStatus & tmrSTATUS_IS_AUTORELOAD) != 0)
 					{
 						xResult = xTimerGenericCommand(pxTimer,
-								tmrCOMMAND_START_DONT_TRACE,
+						tmrCOMMAND_START_DONT_TRACE,
 								xMessage.u.xTimerParameters.xMessageValue
 										+ pxTimer->xTimerPeriodInTicks, NULL,
 								tmrNO_DELAY);
@@ -945,8 +945,8 @@ static void prvSwitchTimerLists(void)
 			else
 			{
 				xResult = xTimerGenericCommand(pxTimer,
-						tmrCOMMAND_START_DONT_TRACE, xNextExpireTime, NULL,
-						tmrNO_DELAY);
+				tmrCOMMAND_START_DONT_TRACE, xNextExpireTime, NULL,
+				tmrNO_DELAY);
 				configASSERT(xResult);
 				(void) xResult;
 			}
