@@ -1,7 +1,7 @@
 #include"main.h"
 #include"lcd_driver.h"
-#include<stdio.h>
-#include<string.h>
+
+
 
 /*variable that will increase when the switch display is pressed*/
 enum display display_state;
@@ -17,7 +17,7 @@ enum display display_state;
 	};
 #endif
 
-extern can_bus_errors* const p_can_errors;
+extern struct can_bus_errors* const p_can_errors;
 
 extern I2C_HandleTypeDef hi2c1;
 
@@ -25,12 +25,26 @@ extern I2C_HandleTypeDef hi2c1;
 
 void Display_handler()
 {
+
+#if (SEGGER_DEBUG_PROBE == 1)
+	SEGGER_SYSVIEW_NameMarker(1, "Can Display time comsumed");
+#endif
+
 	char buffer[21];
+
+	TickType_t xLastWakeTime;
+	const TickType_t xPeriod = pdMS_TO_TICKS( 100 ); //check the lowest refresh rate of data from can bus,
+
+	xLastWakeTime = xTaskGetTickCount();
 
 	while( pdTRUE )
 	{
-		//always check if devide ready!!
-		//Not ok for freeRTOS
+		vTaskDelayUntil( &xLastWakeTime, xPeriod );
+
+#if (SEGGER_DEBUG_PROBE == 1)
+		SEGGER_SYSVIEW_MarkStart(1);
+#endif
+
 		if (HAL_I2C_IsDeviceReady(&hi2c1, DEVICE_ADDR, 2, 10) != HAL_OK)
 		{
 //			xTaskNofity(error_handler-ul)
@@ -39,6 +53,7 @@ void Display_handler()
 #if (TESTING_FOR_DEBUG == 1 )
 		display_state = CAN_DISPLAY;
 #endif
+
 
 		switch(display_state)
 		{
@@ -69,8 +84,11 @@ void Display_handler()
 
 		default: __unreachable();
 
+		}
+#if (SEGGER_DEBUG_PROBE == 1)
+		SEGGER_SYSVIEW_MarkStop(1);
+#endif
 	}
-}
 
 /*DISPLAY MAIN TASK END HERE */
 

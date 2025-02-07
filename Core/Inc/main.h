@@ -33,7 +33,13 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include"FreeRTOS.h"
 #include"task.h"
+#include"queue.h"
+
 #include"all_tasks.h"
+
+#include<stdio.h>
+#include<string.h>
+
 
 /* USER CODE END Includes */
 
