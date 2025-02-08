@@ -92,9 +92,9 @@ extern uint32_t SystemCoreClock;
 #define configUSE_TICK_HOOK				0
 #define configCPU_CLOCK_HZ				(SystemCoreClock)
 #define configTICK_RATE_HZ				((portTickType) 500) // 2ms clock
-#define configMAX_PRIORITIES				( 5 )
+#define configMAX_PRIORITIES				( 7	)
 #define configMINIMAL_STACK_SIZE			((unsigned short) 256)
-#define configTOTAL_HEAP_SIZE				((size_t) (15 * 1024))
+#define configTOTAL_HEAP_SIZE				((size_t) (35 * 1024))
 #define configMAX_TASK_NAME_LEN				(10)
 #define configUSE_TRACE_FACILITY			1
 #define configUSE_16_BIT_TICKS				0
@@ -148,7 +148,7 @@ function. */
 routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
 INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
 PRIORITY THAN THIS! (higher priorities are lower numeric values. */
-#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY	5
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY	4
 
 /* Interrupt priorities used by the kernel port layer itself.  These are generic
 to all Cortex-M ports, and do not rely on any particular library functions. */

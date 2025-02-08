@@ -4,22 +4,13 @@
 /*variable that will increase when the switch display is pressed*/
 enum display display_state;
 
-#if (CAN_DEBUG == 1)
-struct display_can_erros_flags errorDisplayTable[] =
-{
-{ HAL_CAN_ERROR_STF, "ST", 2, 1 },
-{ HAL_CAN_ERROR_FOR, "FM", 2, 4 },
-{ HAL_CAN_ERROR_ACK, "AK", 2, 7 },
-{ HAL_CAN_ERROR_BR, "BR", 2, 10 },
-{ HAL_CAN_ERROR_BD, "BD", 2, 13 },
-{ HAL_CAN_ERROR_CRC, "CRC", 2, 16 } };
-#endif
-
 extern struct can_bus_errors *const p_can_errors;
 
 extern I2C_HandleTypeDef hi2c1;
+extern uint32_t *p_display_errors_flag;
 
-/*DISPLAY MAIN TASK */
+
+/*******************DISPLAY MAIN TASK START HERE****************************************************/
 
 void Display_handler()
 {
@@ -52,6 +43,8 @@ void Display_handler()
 		display_state = CAN_DISPLAY;
 #endif
 
+/*******************DISPLAY SWITCHING****************************************************/
+
 		switch (display_state)
 		{
 		case SPEED_DISPLAY:
@@ -75,27 +68,49 @@ void Display_handler()
 					p_can_errors->Rx_Error_Count);
 			HD44780_PrintStr(buffer);
 
-			Display_can_erros();
-
-			HD44780_Display();
-
 			break;
 #endif
 
-		default:
-			__unreachable();
+		default: __unreachable();
 
 		}
+
+/*******************END DISPLAY SWITCHING****************************************************/
+
+
+/*******************GENERAL PRINT ON LINE 3 ****************************************************/
+		if (*p_display_errors_flag != 0)
+		{
+			//buzzer;
+		}
+		if (*p_display_errors_flag & HAL_CAN_ERROR_BOF)
+		{
+			HD44780_SetCursor(1, 3);
+			snprintf(buffer, 21, "BOF");
+			HD44780_PrintStr(buffer);
+		}
+		if (*p_display_errors_flag & HAL_CAN_ERROR_EPV)
+		{
+			HD44780_SetCursor(5, 3);
+			snprintf(buffer, 21, "EPV");
+			HD44780_PrintStr(buffer);
+		}
+
+/*******************END GENERAL PRINT ON LINE 3 ****************************************************/
+
+		HD44780_Display();
+
+
 #if (SEGGER_DEBUG_PROBE == 1)
 		SEGGER_SYSVIEW_MarkStop(1);
 #endif
 	}
-
-	/*DISPLAY MAIN TASK END HERE */
-
 }
 
-/*DISPLAY RELATED FUNCTIONS */
+/*******************DISPLAY MAIN TASK END HERE****************************************************/
+
+
+/*******************DISPLAY INIT START HERE****************************************************/
 
 void Display_Init()
 {
@@ -104,25 +119,5 @@ void Display_Init()
 	HD44780_Clear();
 }
 
-/*CAN RELATED DISPLAY START */
-
-void Display_can_erros()
-{
-	static const uint8_t errorDisplayTableSize = sizeof(errorDisplayTable)
-			/ sizeof(errorDisplayTable[0]);
-
-	for (uint8_t i = 0; i < errorDisplayTableSize; i++)
-	{
-		if (p_can_errors->bus_status & errorDisplayTable[i].flag)
-		{
-			HD44780_SetCursor(errorDisplayTable[i].col,
-					errorDisplayTable[i].row);
-			HD44780_PrintStr(errorDisplayTable[i].message);
-		}
-	}
-}
-
-/*CAN RELATED DISPLAY END */
-
-/*DISPLAY RELATED FUNCTIONS END HERE */
+/*******************DISPLAY INIT END HERE****************************************************/
 

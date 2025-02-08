@@ -11,6 +11,7 @@
 /*USER INCLUDES HERE*/
 #include"can.h"
 #include"display.h"
+#include"errors.h"
 /*END USER INCLUDES*/
 
 /*USER DEFINES HERE*/
@@ -21,8 +22,6 @@
 /*END USER DEFINES*/
 
 /*FUNCTION PROTOTYPES FROM TASKS HERE */
-
-void Error_handler(void); //see in tasks/error.c
 
 /*END FUNCTION PROTOTYPES */
 

@@ -10,8 +10,6 @@
 
 #define CAN_DEBUG 1 //IN CAZUL IN CARE AVEM ERORI NEREGULATE PE CAN SI NU ARE ROST SA LE REZOLVAM
 
-#define IMP_CAN_ERRORS (HAL_CAN_ERROR_BOF | HAL_CAN_ERROR_EPV ) //important can erros ( Bus Off and Error Passive state )
-
 void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c
 void can_status_recording(void); //see in tasks/can.c
 void Can_msg_handler(void);
@@ -21,7 +19,7 @@ struct can_bus_errors
 {
 	__IO uint8_t Tx_Error_Count;
 	__IO uint8_t Rx_Error_Count;
-	__IO uint32_t bus_status;
+	__IO uint8_t can_bus_status;
 };
 
 struct Queue_Can_Msg
@@ -36,7 +34,7 @@ struct Data_aquisition_can
 	float bus_voltage;
 };
 
-#define CAN_QUEUE_LENGTH 30 //20 MESSAGES
+#define CAN_QUEUE_LENGTH 10 //20 MESSAGES
 
 /*INVERTOR SIGNALS
  *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
