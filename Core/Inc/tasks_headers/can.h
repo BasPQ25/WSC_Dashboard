@@ -19,7 +19,6 @@ struct can_bus_errors
 {
 	__IO uint8_t Tx_Error_Count;
 	__IO uint8_t Rx_Error_Count;
-	__IO uint8_t can_bus_status;
 };
 
 struct Queue_Can_Msg

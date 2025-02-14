@@ -3,7 +3,7 @@
 extern CAN_HandleTypeDef hcan;
 
 struct can_bus_errors can_errors =
-{ .Rx_Error_Count = 0, .Tx_Error_Count = 0, .can_bus_status = 0 };
+{ .Rx_Error_Count = 0, .Tx_Error_Count = 0 };
 
 struct can_bus_errors *const p_can_errors = &can_errors;
 
@@ -11,11 +11,9 @@ struct Data_aquisition_can can_data =
 { .bus_current = 0, .bus_voltage = 0
 
 };
-
 struct Data_aquisition_can *const p_can_data = &can_data;
 
 extern QueueHandle_t Can_Queue;
-extern TaskHandle_t FreeRTOS_Error_handle;
 
 /*VARIABLE USED FOR CAN DATA AQUISITION START */
 
@@ -80,29 +78,16 @@ void Can_transmit_handler()
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-#if (CAN_DEBUG == 1)
-		uint8_t p_inv_data[] =
-		{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-		uint8_t p_bms_data[] =
-		{ 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }; //accesories
-		uint8_t p_aux_data[] =
-		{ 0x00 };
-
-#endif
 //		INV control
-		configASSERT(
-				!HAL_CAN_AddTxMessage(&hcan, &inv_motor_drive_header,
-						p_inv_data, &inv_mailbox));
+		HAL_CAN_AddTxMessage(&hcan, &inv_motor_drive_header, 0x00,
+				&inv_mailbox);
 
 //      BMS control
-		configASSERT(
-				!HAL_CAN_AddTxMessage(&hcan, &bms_state_control_header,
-						p_bms_data, &bms_mailbox));
+		HAL_CAN_AddTxMessage(&hcan, &bms_state_control_header, 0x00,
+				&bms_mailbox);
 
 //		AUX status
-		configASSERT(
-				!HAL_CAN_AddTxMessage(&hcan, &aux_header, p_aux_data,
-						&aux_mailbox));
+		HAL_CAN_AddTxMessage(&hcan, &aux_header, 0x00, &aux_mailbox);
 
 	}
 	/******************TASK CODE END HERE ************************************/
@@ -116,7 +101,7 @@ void USB_LP_CAN_RX0_IRQHandler()
 {
 	CAN_RxHeaderTypeDef received_msg_header;
 	uint8_t can_data_received[8];
-	static struct Queue_Can_Msg msg;
+	struct Queue_Can_Msg msg;
 
 #if (SEGGER_DEBUG_PROBE == 1)
 	SEGGER_SYSVIEW_RecordEnterISR();
@@ -124,38 +109,16 @@ void USB_LP_CAN_RX0_IRQHandler()
 
 	HAL_CAN_IRQHandler(&hcan);
 
-#if (CAN_DEBUG == 1)
-	void can_status_recording();
-#endif
-
 	HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &received_msg_header,
 			can_data_received);
 
 	msg.Identifier = received_msg_header.StdId;
 	memcpy(msg.data, can_data_received, sizeof(can_data_received));
 
-	xQueueSendToBackFromISR(Can_Queue, &msg, NULL);
+//	xQueueSendToBackFromISR(Can_Queue, &msg, pdFALSE);
 
 #if (SEGGER_DEBUG_PROBE == 1)
 	SEGGER_SYSVIEW_RecordExitISR();
 #endif
-}
-
-/*CAN INTERRUPT END HERE*/
-
-void can_status_recording()
-{
-	p_can_errors->Tx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_TEC) >> 16);
-	p_can_errors->Rx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_REC) >> 24);
-
-	p_can_errors->can_bus_status = HAL_CAN_GetError(&hcan);
-	if (p_can_errors->can_bus_status & HAL_CAN_ERROR_BOF)
-	{
-		xTaskNotify(FreeRTOS_Error_handle, HAL_CAN_ERROR_BOF, eSetBits);
-	}
-	if (p_can_errors->can_bus_status & HAL_CAN_ERROR_EPV)
-	{
-		xTaskNotify(FreeRTOS_Error_handle, HAL_CAN_ERROR_EPV, eSetBits);
-	}
 }
 

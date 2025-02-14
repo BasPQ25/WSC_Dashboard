@@ -74,11 +74,6 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
-	//delay for display
-	volatile int j = 100000;
-	while (--j)
-	{
-	}
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -87,13 +82,13 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+
 #if (SEGGER_DEBUG_PROBE == 1)
 	//Enable clock for real time tracing
 	DWT_CTRL |= (1 << 0);
@@ -109,18 +104,18 @@ int main(void)
   MX_ADC1_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-	HAL_CAN_Start(&hcan);
 
-	if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING)
-			!= HAL_OK)
-	{
-		Error_Handler();
-	}
+/*************************************PERIPHERAL INITIALIZATION START HERE ***********************************************/
+  Display_Init();
+  configASSERT(!HAL_CAN_Start(&hcan));
+  configASSERT(!HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) );
 
-	Display_Init();
-	Software_config();
+ /*************************************PERIPHERAL INITIALIZATION END HERE ***********************************************/
+//  Display_Init();
 
-	vTaskStartScheduler();
+  Software_config();
+
+  vTaskStartScheduler();
   /* USER CODE END 2 */
 
   /* Infinite loop */

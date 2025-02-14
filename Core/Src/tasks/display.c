@@ -7,6 +7,8 @@ enum display display_state;
 extern struct can_bus_errors *const p_can_errors;
 
 extern I2C_HandleTypeDef hi2c1;
+extern CAN_HandleTypeDef hcan;
+
 extern uint32_t *p_display_errors_flag;
 
 
@@ -21,14 +23,9 @@ void Display_handler()
 
 	char buffer[21];
 
-	TickType_t xLastWakeTime;
-	const TickType_t xPeriod = pdMS_TO_TICKS(100); //check the lowest refresh rate of data from can bus,
-
-	xLastWakeTime = xTaskGetTickCount();
-
 	while ( pdTRUE)
 	{
-		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+		vTaskDelay( pdMS_TO_TICKS(250) );
 
 #if (SEGGER_DEBUG_PROBE == 1)
 		SEGGER_SYSVIEW_MarkStart(1);
@@ -36,7 +33,7 @@ void Display_handler()
 
 		if (HAL_I2C_IsDeviceReady(&hi2c1, DEVICE_ADDR, 2, 10) != HAL_OK)
 		{
-//			xTaskNofity(error_handler-ul)
+
 		}
 
 #if (TESTING_FOR_DEBUG == 1 )
@@ -58,13 +55,16 @@ void Display_handler()
 #if (CAN_DEBUG == 1)
 		case CAN_DISPLAY:
 
+			p_can_errors->Tx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_TEC) >> 16);
+
 			HD44780_SetCursor(0, 0);
-			snprintf(buffer, 21, "Transmit ER:    %i",
+			snprintf(buffer, 21, "Transmit ER:    %i ",
 					p_can_errors->Tx_Error_Count);
 			HD44780_PrintStr(buffer);
 
+			p_can_errors->Rx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_REC) >> 24);
 			HD44780_SetCursor(0, 1);
-			snprintf(buffer, 21, "Recieve  ER:    %i",
+			snprintf(buffer, 21, "Recieve  ER:    %i ",
 					p_can_errors->Rx_Error_Count);
 			HD44780_PrintStr(buffer);
 
@@ -77,27 +77,24 @@ void Display_handler()
 
 /*******************END DISPLAY SWITCHING****************************************************/
 
+/*******************START ERROR DISPLAY****************************************************/
 
-/*******************GENERAL PRINT ON LINE 3 ****************************************************/
-		if (*p_display_errors_flag != 0)
-		{
-			//buzzer;
-		}
-		if (*p_display_errors_flag & HAL_CAN_ERROR_BOF)
+#if ( CAN_DEBUG == 1)
+
+		if(p_can_errors->Rx_Error_Count > 127 || p_can_errors->Tx_Error_Count > 127 )
 		{
 			HD44780_SetCursor(1, 3);
-			snprintf(buffer, 21, "BOF");
+			snprintf(buffer, 21, "CAN");
 			HD44780_PrintStr(buffer);
 		}
-		if (*p_display_errors_flag & HAL_CAN_ERROR_EPV)
-		{
-			HD44780_SetCursor(5, 3);
-			snprintf(buffer, 21, "EPV");
-			HD44780_PrintStr(buffer);
-		}
+#endif
+
+/*******************END ERROR DISPLAY****************************************************/
+
+/*******************GENERAL PRINT ON LINE 3 ****************************************************/
+
 
 /*******************END GENERAL PRINT ON LINE 3 ****************************************************/
-
 		HD44780_Display();
 
 

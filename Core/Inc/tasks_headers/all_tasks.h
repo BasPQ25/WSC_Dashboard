@@ -11,7 +11,6 @@
 /*USER INCLUDES HERE*/
 #include"can.h"
 #include"display.h"
-#include"errors.h"
 /*END USER INCLUDES*/
 
 /*USER DEFINES HERE*/
