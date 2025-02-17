@@ -27,11 +27,22 @@ struct Queue_Can_Msg
 	uint8_t data[8];
 };
 
+struct mppt
+{
+	float output_voltage;
+	float output_current;
+};
+
 struct Data_aquisition_can
 {
 	float bus_current;
 	float bus_voltage;
+	struct mppt mppt1;
+	struct mppt mppt2;
+
 };
+
+
 
 #define CAN_QUEUE_LENGTH 10 //20 MESSAGES
 

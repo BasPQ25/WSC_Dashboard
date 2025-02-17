@@ -3,12 +3,11 @@
 /*variable that will increase when the switch display is pressed*/
 enum display display_state;
 
-extern struct can_bus_errors *const p_can_errors;
+struct can_bus_errors can_errors = {0};
+struct can_bus_errors* const p_can_errors = &can_errors;
 
 extern I2C_HandleTypeDef hi2c1;
 extern CAN_HandleTypeDef hcan;
-
-extern uint32_t *p_display_errors_flag;
 
 /*******************DISPLAY MAIN TASK START HERE****************************************************/
 

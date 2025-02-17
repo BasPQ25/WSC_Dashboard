@@ -2,16 +2,8 @@
 
 extern CAN_HandleTypeDef hcan;
 
-struct can_bus_errors can_errors =
-{ .Rx_Error_Count = 0, .Tx_Error_Count = 0 };
-
-struct can_bus_errors *const p_can_errors = &can_errors;
-
 struct Data_aquisition_can can_data =
-{ .bus_current = 0, .bus_voltage = 0
-
-};
-struct Data_aquisition_can *const p_can_data = &can_data;
+{ 0 }; //initialize everything with 0;
 
 extern QueueHandle_t Can_Queue;
 
@@ -34,10 +26,21 @@ void Can_msg_handler()
 		switch (msg.Identifier)
 		{
 		/* INVERTOR INCOMING ADRESSES */
-		case INV_TX_STATUS_INFO:
-//					XTaskNotify(Error_handler)
+		case MPPT1_ADDR:
+
+			can_data.mppt1.output_voltage = (float) (decode_float16_to_float32(
+					decode_uint16_t(&msg.data[4])) * 0.01);
+
+			can_data.mppt1.output_current = (float) (decode_float16_to_float32(
+					decode_uint16_t(&msg.data[6])) * 0.0005);
 			break;
-		case INV_TX_BUS_MEASUREMENT:
+
+		case MPPT2_ADDR:
+			can_data.mppt2.output_voltage = (float) (decode_float16_to_float32(
+					decode_uint16_t(&msg.data[4])) * 0.01);
+
+			can_data.mppt2.output_current = (float) (decode_float16_to_float32(
+					decode_uint16_t(&msg.data[6])) * 0.0005);
 
 			break;
 		default:
