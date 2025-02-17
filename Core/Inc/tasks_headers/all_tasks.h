@@ -27,6 +27,7 @@
 /*GENERAL FUNCTIONS PROTOTYPES*/
 
 void Software_config(void);
+void config_handler(void);
 
 /*GENERAL FUNCTIONS PROTOTYPES END HERE*/
 

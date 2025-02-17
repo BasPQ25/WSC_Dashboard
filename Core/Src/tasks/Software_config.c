@@ -1,7 +1,7 @@
 #include"main.h"
 
 TaskHandle_t error_handle, display_handle, can_msg_handle, can_transmit_handle,
-		FreeRTOS_Error_handle, configurator_handle;
+		FreeRTOS_Error_handle;
 
 QueueHandle_t Can_Queue;
 
@@ -9,6 +9,10 @@ extern CAN_HandleTypeDef hcan;
 
 void Software_config()
 {
+
+	configASSERT(
+			!HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING));
+
 	configASSERT(
 			xTaskCreate((TaskFunction_t) Display_handler, "Display", 200, NULL, 2, &display_handle));
 
@@ -24,5 +28,14 @@ void Software_config()
 
 }
 
+void config_handler()
+{
 
+	Software_config();
+
+	while (pdTRUE)
+	{
+		vTaskDelete(NULL);
+	}
+}
 

@@ -1,5 +1,4 @@
 #include"main.h"
-#include"lcd_driver.h"
 
 /*variable that will increase when the switch display is pressed*/
 enum display display_state;
@@ -10,7 +9,6 @@ extern I2C_HandleTypeDef hi2c1;
 extern CAN_HandleTypeDef hcan;
 
 extern uint32_t *p_display_errors_flag;
-
 
 /*******************DISPLAY MAIN TASK START HERE****************************************************/
 
@@ -25,7 +23,7 @@ void Display_handler()
 
 	while ( pdTRUE)
 	{
-		vTaskDelay( pdMS_TO_TICKS(250) );
+		vTaskDelay(pdMS_TO_TICKS(250));
 
 #if (SEGGER_DEBUG_PROBE == 1)
 		SEGGER_SYSVIEW_MarkStart(1);
@@ -40,7 +38,7 @@ void Display_handler()
 		display_state = CAN_DISPLAY;
 #endif
 
-/*******************DISPLAY SWITCHING****************************************************/
+		/*******************DISPLAY SWITCHING****************************************************/
 
 		switch (display_state)
 		{
@@ -55,14 +53,16 @@ void Display_handler()
 #if (CAN_DEBUG == 1)
 		case CAN_DISPLAY:
 
-			p_can_errors->Tx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_TEC) >> 16);
+			p_can_errors->Tx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_TEC)
+					>> 16);
 
 			HD44780_SetCursor(0, 0);
 			snprintf(buffer, 21, "Transmit ER:    %i ",
 					p_can_errors->Tx_Error_Count);
 			HD44780_PrintStr(buffer);
 
-			p_can_errors->Rx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_REC) >> 24);
+			p_can_errors->Rx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_REC)
+					>> 24);
 			HD44780_SetCursor(0, 1);
 			snprintf(buffer, 21, "Recieve  ER:    %i ",
 					p_can_errors->Rx_Error_Count);
@@ -71,17 +71,19 @@ void Display_handler()
 			break;
 #endif
 
-		default: __unreachable();
+		default:
+			__unreachable();
 
 		}
 
-/*******************END DISPLAY SWITCHING****************************************************/
+		/*******************END DISPLAY SWITCHING****************************************************/
 
-/*******************START ERROR DISPLAY****************************************************/
+		/*******************START ERROR DISPLAY****************************************************/
 
 #if ( CAN_DEBUG == 1)
 
-		if(p_can_errors->Rx_Error_Count > 127 || p_can_errors->Tx_Error_Count > 127 )
+		if (p_can_errors->Rx_Error_Count > 127
+				|| p_can_errors->Tx_Error_Count > 127)
 		{
 			HD44780_SetCursor(1, 3);
 			snprintf(buffer, 21, "CAN");
@@ -89,14 +91,12 @@ void Display_handler()
 		}
 #endif
 
-/*******************END ERROR DISPLAY****************************************************/
+		/*******************END ERROR DISPLAY****************************************************/
 
-/*******************GENERAL PRINT ON LINE 3 ****************************************************/
+		/*******************GENERAL PRINT ON LINE 3 ****************************************************/
 
-
-/*******************END GENERAL PRINT ON LINE 3 ****************************************************/
+		/*******************END GENERAL PRINT ON LINE 3 ****************************************************/
 		HD44780_Display();
-
 
 #if (SEGGER_DEBUG_PROBE == 1)
 		SEGGER_SYSVIEW_MarkStop(1);
@@ -105,7 +105,6 @@ void Display_handler()
 }
 
 /*******************DISPLAY MAIN TASK END HERE****************************************************/
-
 
 /*******************DISPLAY INIT START HERE****************************************************/
 

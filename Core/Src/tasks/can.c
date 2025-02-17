@@ -29,7 +29,7 @@ void Can_msg_handler()
 	while ( pdTRUE)
 	{
 
-		xQueueReceive(Can_Queue, (void*)&msg, portMAX_DELAY); //wait until something from ISR is getting
+		xQueueReceive(Can_Queue, (void*) &msg, portMAX_DELAY); //wait until something from ISR is getting
 
 		switch (msg.Identifier)
 		{
@@ -38,10 +38,6 @@ void Can_msg_handler()
 //					XTaskNotify(Error_handler)
 			break;
 		case INV_TX_BUS_MEASUREMENT:
-
-			memcpy(&p_can_data->bus_current, (float*) msg.data, sizeof(float));
-			memcpy(&p_can_data->bus_voltage, (float*) &msg.data[4],
-					sizeof(float));
 
 			break;
 		default:
@@ -68,7 +64,6 @@ void Can_transmit_handler()
 	uint32_t inv_mailbox;
 	uint32_t bms_mailbox;
 	uint32_t aux_mailbox;
-
 
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(100);
@@ -104,11 +99,11 @@ void USB_LP_CAN_RX0_IRQHandler()
 	SEGGER_SYSVIEW_RecordEnterISR();
 #endif
 
-	static 	CAN_RxHeaderTypeDef received_msg_header;
+	static CAN_RxHeaderTypeDef received_msg_header;
 	static uint8_t can_data_received[8];
 	static struct Queue_Can_Msg msg;
 
-	BaseType_t  xHigherPriorityTaskWoken = pdFALSE;
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
 //	HAL_CAN_IRQHandler(&hcan);
 
@@ -118,7 +113,7 @@ void USB_LP_CAN_RX0_IRQHandler()
 	msg.Identifier = received_msg_header.StdId;
 	memcpy(msg.data, can_data_received, sizeof(can_data_received));
 
-	configASSERT(xQueueSendFromISR(Can_Queue, &msg, &xHigherPriorityTaskWoken) );
+	configASSERT(xQueueSendFromISR(Can_Queue, &msg, &xHigherPriorityTaskWoken));
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
 #if (SEGGER_DEBUG_PROBE == 1)
