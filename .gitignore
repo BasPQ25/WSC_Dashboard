@@ -3,7 +3,10 @@
 RemoteSystemsTempFiles/
 .settings/
 Debug/
+Release/
 *.launch
+
+
 
 # STM32 git ignore
 *.mxproject

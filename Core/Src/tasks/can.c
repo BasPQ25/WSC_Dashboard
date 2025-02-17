@@ -36,6 +36,7 @@ void Can_msg_handler()
 			break;
 
 		case MPPT2_ADDR:
+
 			can_data.mppt2.output_voltage = (float) (decode_float16_to_float32(
 					decode_uint16_t(&msg.data[4])) * 0.01);
 
