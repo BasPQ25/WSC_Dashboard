@@ -111,7 +111,7 @@ int main(void)
   configASSERT(!HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) );
 
  /*************************************PERIPHERAL INITIALIZATION END HERE ***********************************************/
-//  Display_Init();
+
 
   Software_config();
 

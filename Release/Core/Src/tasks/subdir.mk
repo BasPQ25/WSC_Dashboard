@@ -7,20 +7,17 @@
 C_SRCS += \
 ../Core/Src/tasks/Software_config.c \
 ../Core/Src/tasks/can.c \
-../Core/Src/tasks/display.c \
-../Core/Src/tasks/errors.c 
+../Core/Src/tasks/display.c 
 
 OBJS += \
 ./Core/Src/tasks/Software_config.o \
 ./Core/Src/tasks/can.o \
-./Core/Src/tasks/display.o \
-./Core/Src/tasks/errors.o 
+./Core/Src/tasks/display.o 
 
 C_DEPS += \
 ./Core/Src/tasks/Software_config.d \
 ./Core/Src/tasks/can.d \
-./Core/Src/tasks/display.d \
-./Core/Src/tasks/errors.d 
+./Core/Src/tasks/display.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -30,7 +27,7 @@ Core/Src/tasks/%.o Core/Src/tasks/%.su Core/Src/tasks/%.cyclo: ../Core/Src/tasks
 clean: clean-Core-2f-Src-2f-tasks
 
 clean-Core-2f-Src-2f-tasks:
-	-$(RM) ./Core/Src/tasks/Software_config.cyclo ./Core/Src/tasks/Software_config.d ./Core/Src/tasks/Software_config.o ./Core/Src/tasks/Software_config.su ./Core/Src/tasks/can.cyclo ./Core/Src/tasks/can.d ./Core/Src/tasks/can.o ./Core/Src/tasks/can.su ./Core/Src/tasks/display.cyclo ./Core/Src/tasks/display.d ./Core/Src/tasks/display.o ./Core/Src/tasks/display.su ./Core/Src/tasks/errors.cyclo ./Core/Src/tasks/errors.d ./Core/Src/tasks/errors.o ./Core/Src/tasks/errors.su
+	-$(RM) ./Core/Src/tasks/Software_config.cyclo ./Core/Src/tasks/Software_config.d ./Core/Src/tasks/Software_config.o ./Core/Src/tasks/Software_config.su ./Core/Src/tasks/can.cyclo ./Core/Src/tasks/can.d ./Core/Src/tasks/can.o ./Core/Src/tasks/can.su ./Core/Src/tasks/display.cyclo ./Core/Src/tasks/display.d ./Core/Src/tasks/display.o ./Core/Src/tasks/display.su
 
 .PHONY: clean-Core-2f-Src-2f-tasks
 

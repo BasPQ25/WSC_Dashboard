@@ -3,7 +3,7 @@
 *                        The Embedded Experts                        *
 **********************************************************************
 *                                                                    *
-*            (c) 1995 - 2024 SEGGER Microcontroller GmbH             *
+*            (c) 1995 - 2019 SEGGER Microcontroller GmbH             *
 *                                                                    *
 *       www.segger.com     Support: support@segger.com               *
 *                                                                    *
@@ -42,7 +42,7 @@
 *                                                                    *
 **********************************************************************
 *                                                                    *
-*       SystemView version: 3.60                                    *
+*       SystemView version: 3.20                                    *
 *                                                                    *
 **********************************************************************
 ---------------------------END-OF-HEADER------------------------------
@@ -322,8 +322,7 @@ int SEGGER_RTT_vprintf(unsigned BufferIndex, const char * sFormat, va_list * pPa
   char c;
   SEGGER_RTT_PRINTF_DESC BufferDesc;
   int v;
-  unsigned char PrecisionSet;
-  unsigned Precision;
+  unsigned NumDigits;
   unsigned FormatFlags;
   unsigned FieldWidth;
   char acBuffer[SEGGER_RTT_PRINTF_BUFFER_SIZE];
@@ -372,26 +371,18 @@ int SEGGER_RTT_vprintf(unsigned BufferIndex, const char * sFormat, va_list * pPa
       //
       // Filter out precision (number of digits to display)
       //
-      PrecisionSet = 0;
-      Precision = 0u;
+      NumDigits = 0u;
       c = *sFormat;
       if (c == '.') {
         sFormat++;
-        if (*sFormat == '*') {
+        do {
+          c = *sFormat;
+          if ((c < '0') || (c > '9')) {
+            break;
+          }
           sFormat++;
-          PrecisionSet = 1;
-          Precision = va_arg(*pParamList, int);
-        } else {
-          do {
-            c = *sFormat;
-            if ((c < '0') || (c > '9')) {
-              break;
-            }
-            PrecisionSet = 1;
-            sFormat++;
-            Precision = Precision * 10u + ((unsigned)c - '0');
-          } while (1);
-        }
+          NumDigits = NumDigits * 10u + ((unsigned)c - '0');
+        } while (1);
       }
       //
       // Filter out length modifier
@@ -418,35 +409,27 @@ int SEGGER_RTT_vprintf(unsigned BufferIndex, const char * sFormat, va_list * pPa
       }
       case 'd':
         v = va_arg(*pParamList, int);
-        _PrintInt(&BufferDesc, v, 10u, Precision, FieldWidth, FormatFlags);
+        _PrintInt(&BufferDesc, v, 10u, NumDigits, FieldWidth, FormatFlags);
         break;
       case 'u':
         v = va_arg(*pParamList, int);
-        _PrintUnsigned(&BufferDesc, (unsigned)v, 10u, Precision, FieldWidth, FormatFlags);
+        _PrintUnsigned(&BufferDesc, (unsigned)v, 10u, NumDigits, FieldWidth, FormatFlags);
         break;
       case 'x':
       case 'X':
         v = va_arg(*pParamList, int);
-        _PrintUnsigned(&BufferDesc, (unsigned)v, 16u, Precision, FieldWidth, FormatFlags);
+        _PrintUnsigned(&BufferDesc, (unsigned)v, 16u, NumDigits, FieldWidth, FormatFlags);
         break;
       case 's':
         {
           const char * s = va_arg(*pParamList, const char *);
-          if (s == NULL) {
-            s = "(NULL)";     // Print (NULL) instead of crashing or breaking, as it is more informative to the user.
-            PrecisionSet = 0; // Make sure (NULL) is printed, even when precision was set.
-          }
           do {
             c = *s;
             s++;
             if (c == '\0') {
               break;
             }
-            if ((PrecisionSet != 0) && (Precision == 0)) {
-              break;
-            }
-            _StoreChar(&BufferDesc, c);
-            Precision--;
+           _StoreChar(&BufferDesc, c);
           } while (BufferDesc.ReturnValue >= 0);
         }
         break;
