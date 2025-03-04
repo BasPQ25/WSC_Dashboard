@@ -26,7 +26,7 @@ void Software_config()
 	HAL_Delay(10);
 
 	configASSERT(
-				!HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING));
+			!HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING));
 
 }
 

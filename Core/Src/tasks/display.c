@@ -3,8 +3,9 @@
 /*variable that will increase when the switch display is pressed*/
 enum display display_state;
 
-struct can_bus_errors can_errors = {0};
-struct can_bus_errors* const p_can_errors = &can_errors;
+struct can_bus_errors can_errors =
+{ 0 };
+struct can_bus_errors *const p_can_errors = &can_errors;
 
 extern I2C_HandleTypeDef hi2c1;
 
@@ -46,15 +47,21 @@ void Display_handler()
 			break;
 		case MPPT_DISPLAY:
 			HD44780_SetCursor(0, 0);
-			snprintf(buffer,21,"MPPT1: %4.3f", can_data.mppt1.output_current * can_data.mppt1.output_voltage);
+			snprintf(buffer, 21, "MPPT1: %4.3f",
+					can_data.mppt1.output_current
+							* can_data.mppt1.output_voltage);
 			HD44780_PrintStr(buffer);
 
 			HD44780_SetCursor(0, 1);
-			snprintf(buffer,21,"MPPT2: %4.3f", can_data.mppt2.output_current * can_data.mppt2.output_voltage);
+			snprintf(buffer, 21, "MPPT2: %4.3f",
+					can_data.mppt2.output_current
+							* can_data.mppt2.output_voltage);
 			HD44780_PrintStr(buffer);
 
 			HD44780_SetCursor(0, 2);
-			snprintf(buffer,21,"MPPT3: %4.3f", can_data.mppt3.output_current * can_data.mppt3.output_voltage);
+			snprintf(buffer, 21, "MPPT3: %4.3f",
+					can_data.mppt3.output_current
+							* can_data.mppt3.output_voltage);
 			HD44780_PrintStr(buffer);
 			break;
 
@@ -97,7 +104,6 @@ void Display_handler()
 			snprintf(buffer, 21, "CAN");
 			HD44780_PrintStr(buffer);
 		}
-
 
 #endif
 
