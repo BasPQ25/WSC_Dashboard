@@ -7,7 +7,8 @@ struct can_bus_errors can_errors = {0};
 struct can_bus_errors* const p_can_errors = &can_errors;
 
 extern I2C_HandleTypeDef hi2c1;
-extern CAN_HandleTypeDef hcan;
+
+extern struct Data_aquisition_can can_data;
 
 /*******************DISPLAY MAIN TASK START HERE****************************************************/
 
@@ -34,7 +35,7 @@ void Display_handler()
 		}
 
 #if (TESTING_FOR_DEBUG == 1 )
-		display_state = CAN_DISPLAY;
+		display_state = MPPT_DISPLAY;
 #endif
 
 		/*******************DISPLAY SWITCHING****************************************************/
@@ -44,11 +45,19 @@ void Display_handler()
 		case SPEED_DISPLAY:
 			break;
 		case MPPT_DISPLAY:
+			HD44780_SetCursor(0, 0);
+			snprintf(buffer,21,"MPPT1: %4.3f", can_data.mppt1.output_current * can_data.mppt1.output_voltage);
+			HD44780_PrintStr(buffer);
+
+			HD44780_SetCursor(0, 1);
+			snprintf(buffer,21,"MPPT2: %4.3f", can_data.mppt2.output_current * can_data.mppt2.output_voltage);
+			HD44780_PrintStr(buffer);
+
+			HD44780_SetCursor(0, 2);
+			snprintf(buffer,21,"MPPT3: %4.3f", can_data.mppt3.output_current * can_data.mppt3.output_voltage);
+			HD44780_PrintStr(buffer);
 			break;
 
-			/* Not tested case, should be tested on the car
-			 *
-			 */
 #if (CAN_DEBUG == 1)
 		case CAN_DISPLAY:
 
@@ -88,6 +97,8 @@ void Display_handler()
 			snprintf(buffer, 21, "CAN");
 			HD44780_PrintStr(buffer);
 		}
+
+
 #endif
 
 		/*******************END ERROR DISPLAY****************************************************/

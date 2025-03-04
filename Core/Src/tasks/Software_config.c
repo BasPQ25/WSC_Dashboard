@@ -11,9 +11,6 @@ void Software_config()
 {
 
 	configASSERT(
-			!HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING));
-
-	configASSERT(
 			xTaskCreate((TaskFunction_t) Display_handler, "Display", 200, NULL, 2, &display_handle));
 
 	configASSERT(
@@ -25,6 +22,11 @@ void Software_config()
 	Can_Queue = xQueueCreate((UBaseType_t) CAN_QUEUE_LENGTH,
 			(UBaseType_t ) sizeof(struct Queue_Can_Msg));
 	configASSERT(Can_Queue);
+
+	HAL_Delay(10);
+
+	configASSERT(
+				!HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING));
 
 }
 

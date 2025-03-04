@@ -28,22 +28,25 @@ void Can_msg_handler()
 		/* INVERTOR INCOMING ADRESSES */
 		case MPPT1_ADDR:
 
-			can_data.mppt1.output_voltage = (float) (decode_float16_to_float32(
-					decode_uint16_t(&msg.data[4])) * 0.01);
+			can_data.mppt1.output_voltage = (float) ( ( ( msg.data[4] << 8 ) | msg.data[5] ) * 0.01 ) ;
 
-			can_data.mppt1.output_current = (float) (decode_float16_to_float32(
-					decode_uint16_t(&msg.data[6])) * 0.0005);
+			can_data.mppt1.output_current = (float) ( ( ( msg.data[6] << 8 ) | msg.data[7] ) * 0.0005);
 			break;
 
 		case MPPT2_ADDR:
 
-			can_data.mppt2.output_voltage = (float) (decode_float16_to_float32(
-					decode_uint16_t(&msg.data[4])) * 0.01);
+			can_data.mppt2.output_voltage = (float) ( ( ( msg.data[4] << 8 ) | msg.data[5] ) * 0.01 ) ;
 
-			can_data.mppt2.output_current = (float) (decode_float16_to_float32(
-					decode_uint16_t(&msg.data[6])) * 0.0005);
-
+			can_data.mppt2.output_current = (float) ( ( ( msg.data[6] << 8 ) | msg.data[7] ) * 0.0005);
 			break;
+
+		case MPPT3_ADDR:
+
+			can_data.mppt3.output_voltage = (float) ( ( ( msg.data[4] << 8 ) | msg.data[5] ) * 0.01 ) ;
+
+			can_data.mppt3.output_current = (float) ( ( ( msg.data[6] << 8 ) | msg.data[7] ) * 0.0005);
+			break;
+
 		default:
 			break;
 		}

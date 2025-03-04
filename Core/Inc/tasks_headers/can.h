@@ -39,6 +39,7 @@ struct Data_aquisition_can
 	float bus_voltage;
 	struct mppt mppt1;
 	struct mppt mppt2;
+	struct mppt mppt3;
 
 };
 
@@ -83,7 +84,7 @@ struct Data_aquisition_can
 
 #define MPPT_BASE_ADDR 0X200
 
-#define MPPT1_ADDR ( MPPT_BASE_ADDR + 0X020 )
+#define MPPT1_ADDR ( MPPT_BASE_ADDR )
 #define MPPT2_ADDR ( MPPT_BASE_ADDR + 0X030 )
 #define MPPT3_ADDR ( MPPT_BASE_ADDR + 0X040 )
 
