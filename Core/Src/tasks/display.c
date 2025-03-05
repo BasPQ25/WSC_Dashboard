@@ -39,31 +39,47 @@ void Display_handler()
 		display_state = MPPT_DISPLAY;
 #endif
 
-		/*******************DISPLAY SWITCHING****************************************************/
+/*******************DISPLAY SWITCHING****************************************************/
 
 		switch (display_state)
 		{
 		case SPEED_DISPLAY:
 			break;
 		case MPPT_DISPLAY:
+
+/**********************************START FIRST ROW**********************************************/
+			if (can_data.mppt1.output_current >= MPPT_SIGN_ERROR_VALUE)
+				can_data.mppt1.output_current = 0;
+
 			HD44780_SetCursor(0, 0);
-			snprintf(buffer, 21, "MPPT1: %4.3f",
+			snprintf(buffer, 21, "MPPT1: %6.2f",
 					can_data.mppt1.output_current
 							* can_data.mppt1.output_voltage);
 			HD44780_PrintStr(buffer);
+/**********************************END FIRST ROW**********************************************/
+
+/**********************************START SECOND ROW**********************************************/
+			if (can_data.mppt2.output_current >= MPPT_SIGN_ERROR_VALUE)
+				can_data.mppt2.output_current = 0;
 
 			HD44780_SetCursor(0, 1);
-			snprintf(buffer, 21, "MPPT2: %4.3f",
+			snprintf(buffer, 21, "MPPT2: %6.2f",
 					can_data.mppt2.output_current
 							* can_data.mppt2.output_voltage);
 			HD44780_PrintStr(buffer);
 
+			if (can_data.mppt3.output_current >= MPPT_SIGN_ERROR_VALUE)
+				can_data.mppt3.output_current = 0;
+/**********************************END SECOND ROW**********************************************/
+
+/**********************************START THIRD ROW**********************************************/
 			HD44780_SetCursor(0, 2);
-			snprintf(buffer, 21, "MPPT3: %4.3f",
+			snprintf(buffer, 21, "MPPT3: %6.2f",
 					can_data.mppt3.output_current
 							* can_data.mppt3.output_voltage);
 			HD44780_PrintStr(buffer);
 			break;
+/**********************************END THIRD ROW**********************************************/
 
 #if (CAN_DEBUG == 1)
 		case CAN_DISPLAY:

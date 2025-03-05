@@ -33,6 +33,7 @@ void Can_msg_handler()
 
 			can_data.mppt1.output_current = (float) (((msg.data[6] << 8)
 					| msg.data[7]) * 0.0005);
+
 			break;
 
 		case MPPT2_ADDR:
