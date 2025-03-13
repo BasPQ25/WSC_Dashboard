@@ -39,15 +39,16 @@ void Display_handler()
 		display_state = MPPT_DISPLAY;
 #endif
 
-/*******************DISPLAY SWITCHING****************************************************/
+		/*******************DISPLAY SWITCHING****************************************************/
 
 		switch (display_state)
 		{
 		case SPEED_DISPLAY:
+
 			break;
 		case MPPT_DISPLAY:
 
-/**********************************START FIRST ROW**********************************************/
+			/**********************************START FIRST ROW**********************************************/
 			if (can_data.mppt1.output_current >= MPPT_SIGN_ERROR_VALUE)
 				can_data.mppt1.output_current = 0;
 
@@ -56,9 +57,9 @@ void Display_handler()
 					can_data.mppt1.output_current
 							* can_data.mppt1.output_voltage);
 			HD44780_PrintStr(buffer);
-/**********************************END FIRST ROW**********************************************/
+			/**********************************END FIRST ROW**********************************************/
 
-/**********************************START SECOND ROW**********************************************/
+			/**********************************START SECOND ROW**********************************************/
 			if (can_data.mppt2.output_current >= MPPT_SIGN_ERROR_VALUE)
 				can_data.mppt2.output_current = 0;
 
@@ -68,39 +69,19 @@ void Display_handler()
 							* can_data.mppt2.output_voltage);
 			HD44780_PrintStr(buffer);
 
+			/**********************************END SECOND ROW**********************************************/
+
+			/**********************************START THIRD ROW**********************************************/
 			if (can_data.mppt3.output_current >= MPPT_SIGN_ERROR_VALUE)
 				can_data.mppt3.output_current = 0;
-/**********************************END SECOND ROW**********************************************/
-
-/**********************************START THIRD ROW**********************************************/
 			HD44780_SetCursor(0, 2);
 			snprintf(buffer, 21, "MPPT3: %6.2f",
 					can_data.mppt3.output_current
 							* can_data.mppt3.output_voltage);
 			HD44780_PrintStr(buffer);
 			break;
-/**********************************END THIRD ROW**********************************************/
+			/**********************************END THIRD ROW**********************************************/
 
-#if (CAN_DEBUG == 1)
-		case CAN_DISPLAY:
-
-			p_can_errors->Tx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_TEC)
-					>> 16);
-
-			HD44780_SetCursor(0, 0);
-			snprintf(buffer, 21, "Transmit ER:    %i ",
-					p_can_errors->Tx_Error_Count);
-			HD44780_PrintStr(buffer);
-
-			p_can_errors->Rx_Error_Count = (uint8_t) ((CAN->ESR & CAN_ESR_REC)
-					>> 24);
-			HD44780_SetCursor(0, 1);
-			snprintf(buffer, 21, "Recieve  ER:    %i ",
-					p_can_errors->Rx_Error_Count);
-			HD44780_PrintStr(buffer);
-
-			break;
-#endif
 
 		default:
 			__unreachable();

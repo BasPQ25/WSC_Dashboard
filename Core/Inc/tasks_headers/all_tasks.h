@@ -11,12 +11,17 @@
 /*USER INCLUDES HERE*/
 #include"can.h"
 #include"display.h"
+#include"buttons.h"
 /*END USER INCLUDES*/
 
 /*USER DEFINES HERE*/
 
 #define SEGGER_DEBUG_PROBE 1 //for debugging with segger
 #define TESTING_FOR_DEBUG 1
+
+#define MIN(a, b) ((a) <= (b) ? (a) : (b))
+#define MAX(a, b) ((a) >= (b) ? (a) : (b))
+
 
 /*END USER DEFINES*/
 

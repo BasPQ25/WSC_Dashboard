@@ -13,7 +13,7 @@ extern QueueHandle_t Can_Queue;
 
 /*CAN MESSAGE TASK STARTS HERE*/
 
-void Can_msg_handler()
+void Can_receive_handler()
 {
 	struct Queue_Can_Msg msg;
 
@@ -25,8 +25,32 @@ void Can_msg_handler()
 
 		switch (msg.Identifier)
 		{
-		/* INVERTOR INCOMING ADRESSES */
-		case MPPT1_ADDR:
+
+		case BMU_TX_PRECHARGE_STATUS:
+
+			switch (msg.data[1]) {
+			case 1:  // Idle
+				can_data.bms.rx_state = IDLE;
+				break;
+			case 5:  // Enable Pack
+			case 2:  // Measure
+				break;
+			case 3:  // Pre-charge
+				can_data.bms.rx_state  = PRE_CHARGE;
+				break;
+			case 4:  // Run
+				can_data.bms.rx_state  = DRIVE;
+				break;
+			case 0:
+				can_data.bms.rx_state  = ERR;
+				break;
+			default:
+				can_data.bms.rx_state = ERR;
+				break;
+			}
+
+
+		case MPPT1_TX_POWER_MEASUREMENT:
 
 			can_data.mppt1.output_voltage = (float) (((msg.data[4] << 8)
 					| msg.data[5]) * 0.01);
@@ -36,7 +60,7 @@ void Can_msg_handler()
 
 			break;
 
-		case MPPT2_ADDR:
+		case MPPT2_TX_POWER_MEASUREMENT:
 
 			can_data.mppt2.output_voltage = (float) (((msg.data[4] << 8)
 					| msg.data[5]) * 0.01);
@@ -45,7 +69,7 @@ void Can_msg_handler()
 					| msg.data[7]) * 0.0005);
 			break;
 
-		case MPPT3_ADDR:
+		case MPPT3_TX_POWER_MEASUREMENT:
 
 			can_data.mppt3.output_voltage = (float) (((msg.data[4] << 8)
 					| msg.data[5]) * 0.01);
@@ -61,49 +85,6 @@ void Can_msg_handler()
 
 }
 /******************TASK CODE END HERE ************************************/
-
-/*CAN MESSAGE TASK END HERE*/
-
-/*CAN TRANSMIT TASK START HERE */
-
-void Can_transmit_handler()
-{
-	const CAN_TxHeaderTypeDef inv_motor_drive_header =
-	{ INV_RX_MOTOR_DRIVE, 0x00, CAN_RTR_DATA, CAN_ID_STD, 8, DISABLE };
-	const CAN_TxHeaderTypeDef bms_state_control_header =
-	{ BMS_RX_STATE_CONTROL, 0x00, CAN_RTR_DATA, CAN_ID_STD, 8, DISABLE };
-	const CAN_TxHeaderTypeDef aux_header =
-	{ AUXILIARY_CONTROL, 0x00, CAN_RTR_DATA, CAN_ID_STD, 1, DISABLE };
-
-	uint32_t inv_mailbox;
-	uint32_t bms_mailbox;
-	uint32_t aux_mailbox;
-
-	TickType_t xLastWakeTime;
-	const TickType_t xPeriod = pdMS_TO_TICKS(100);
-	xLastWakeTime = xTaskGetTickCount();
-
-	/******************TASK CODE STARTS HERE ************************************/
-	while ( pdTRUE)
-	{
-		vTaskDelayUntil(&xLastWakeTime, xPeriod);
-
-//		INV control
-		HAL_CAN_AddTxMessage(&hcan, &inv_motor_drive_header, 0x00,
-				&inv_mailbox);
-
-//      BMS control
-		HAL_CAN_AddTxMessage(&hcan, &bms_state_control_header, 0x00,
-				&bms_mailbox);
-
-//		AUX status
-		HAL_CAN_AddTxMessage(&hcan, &aux_header, 0x00, &aux_mailbox);
-
-	}
-	/******************TASK CODE END HERE ************************************/
-}
-
-/*CAN TRANSMIT TASK END HERE*/
 
 /* CAN INTERRUPT STARTS HERE */
 
@@ -134,4 +115,6 @@ void USB_LP_CAN_RX0_IRQHandler()
 	SEGGER_SYSVIEW_RecordExitISR();
 #endif
 }
+
+
 

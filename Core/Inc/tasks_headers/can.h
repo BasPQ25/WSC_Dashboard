@@ -8,12 +8,20 @@
 #ifndef INC_TASKS_HEADERS_CAN_H_
 #define INC_TASKS_HEADERS_CAN_H_
 
+typedef enum boolean{
+	FALSE = 0,
+	TRUE
+}bool;
+
 #define CAN_DEBUG 1 //IN CAZUL IN CARE AVEM ERORI NEREGULATE PE CAN SI NU ARE ROST SA LE REZOLVAM
 
 void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c
 void can_status_recording(void); //see in tasks/can.c
-void Can_msg_handler(void);
+void Can_receive_handler(void);
 void Can_transmit_handler(void);
+bool get_bms_state(const CAN_TxHeaderTypeDef* bms_header, uint32_t* bms_mailbox);
+void motor_control(const CAN_TxHeaderTypeDef *inv_motor_drive_header, uint32_t *inv_mailbox, bool bms_state);
+void set_invertor_data(uint8_t* inv_data, float mot_speed, float current_reffrence);
 
 struct can_bus_errors
 {
@@ -33,15 +41,26 @@ struct mppt
 	float output_current;
 };
 
+struct Battery_Management_Sys
+{
+	uint8_t rx_state;
+
+};
+
 struct Data_aquisition_can
 {
 	float bus_current;
 	float bus_voltage;
+
 	struct mppt mppt1;
 	struct mppt mppt2;
 	struct mppt mppt3;
 
+	struct Battery_Management_Sys bms;
+
 };
+
+
 
 
 
@@ -67,16 +86,26 @@ struct Data_aquisition_can
 /* INVERTOR SIGNLAS END HERE*/
 
 /*BMS SIGNAL
- *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
- *  TX = INVERTOR TRANSMITS A MESSAGE, SO DASHBOARD/VCU RECEIVES
+ *  RX = BMS RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
+ *  TX = BMS TRANSMITS A MESSAGE, SO DASHBOARD/VCU RECEIVES
  */
 #define BMS_RX_STATE_CONTROL 0x505 //100ms
 
-#define BMU_TX_HEARTHBEAT 0x600 // 1 sec
-#define BMU_TX_SOC        0X6F4 // 1 sec
-#define BMU_TX_STATUS     0x6F7 // 1 sec
+#define BMU_TX_HEARTHBEAT 			0x600 // 1 sec
+#define BMU_TX_SOC       			0X6F4 // 1 sec
+#define BMU_TX_PRECHARGE_STATUS     0x6F7 // 1 sec
 
 #define CMU1_HEARTHBEAT //INTREABA l pe stefan cat e
+
+enum State {
+	IDLE = 0,
+	PRE_CHARGE,
+	DRIVE,
+	ERR
+};
+
+
+
 
 /*BMS SIGNAL END HERE */
 
@@ -84,17 +113,21 @@ struct Data_aquisition_can
 
 #define MPPT_BASE_ADDR 0X200
 
-#define MPPT1_ADDR ( MPPT_BASE_ADDR )
-#define MPPT2_ADDR ( MPPT_BASE_ADDR + 0X030 )
-#define MPPT3_ADDR ( MPPT_BASE_ADDR + 0X040 )
+/*MPPT SIGNAL
+ *  RX = MPPT RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
+ *  TX = MPPT TRANSMITS A MESSAGE, SO DASHBOARD/VCU RECEIVES
+ */
+#define MPPT1_TX_ADDR ( MPPT_BASE_ADDR )
+#define MPPT2_TX_ADDR ( MPPT_BASE_ADDR + 0X030 )
+#define MPPT3_TX_ADDR ( MPPT_BASE_ADDR + 0X040 )
 
-#define MPPT1_POWER_MEASUREMENT (MPPT1_ADDR + 0X000) // 500 ms
-#define MPPT2_POWER_MEASUREMENT (MPPT2_ADDR + 0X000) // 500 ms
-#define MPPT3_POWER_MEASUREMENT (MPPT3_ADDR + 0X000) // 500 ms
+#define MPPT1_TX_POWER_MEASUREMENT (MPPT1_TX_ADDR + 0X000) // 500 ms
+#define MPPT2_TX_POWER_MEASUREMENT (MPPT2_TX_ADDR + 0X000) // 500 ms
+#define MPPT3_TX_POWER_MEASUREMENT (MPPT3_TX_ADDR + 0X000) // 500 ms
 
-#define MPPT1_STATUS ( MPPT1_ADDR + 0X01) // 1 second
-#define MPPT2_STATUS ( MPPT2_ADDR + 0X01) // 1 second
-#define MPPT3_STATUS ( MPPT3_ADDR + 0X01) // 1 second
+#define MPPT1_TX_STATUS ( MPPT1_TX_ADDR + 0X01) // 1 second
+#define MPPT2_TX_STATUS ( MPPT2_TX_ADDR + 0X01) // 1 second
+#define MPPT3_TX_STATUS ( MPPT3_TX_ADDR + 0X01) // 1 second
 
 /*MPPT SIGNAL END HERE */
 
