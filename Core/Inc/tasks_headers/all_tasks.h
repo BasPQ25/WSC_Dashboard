@@ -1,9 +1,3 @@
-/*
- * tasks.h
- *
- *  Created on: Feb 5, 2025
- *      Author: paulb
- */
 
 #ifndef INC_ALL_TASKS_H_
 #define INC_ALL_TASKS_H_
@@ -19,9 +13,13 @@
 #define SEGGER_DEBUG_PROBE 1 //for debugging with segger
 #define TESTING_FOR_DEBUG 1
 
-#define MIN(a, b) ((a) <= (b) ? (a) : (b))
-#define MAX(a, b) ((a) >= (b) ? (a) : (b))
-
+static inline uint16_t min(uint16_t a, uint16_t b) {
+    return (a <= b) ? a : b;
+}
+static inline uint16_t max(uint16_t a, uint16_t b)
+{
+	return (a <= b) ? b : a;
+}
 
 /*END USER DEFINES*/
 

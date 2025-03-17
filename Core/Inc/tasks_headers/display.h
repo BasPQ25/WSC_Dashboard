@@ -13,21 +13,15 @@
 
 void Display_handler(void);
 void Display_Init(void);
-void Display_can_erros(void);
+
+void Main_Display(char* buffer);
+void MPPT_Display(char* buffer);
 
 enum display
 {
-	SPEED_DISPLAY = 0,
+	MAIN_DISPLAY = 0,
 	MPPT_DISPLAY,
 	MAX_DISPLAY
 };
 
-#if (CAN_DEBUG == 1)
-	struct display_can_erros_flags {
-		uint32_t flag;
-	    const char* message;
-	    uint8_t row;
-	    uint8_t col;
-};
-#endif
 #endif /* INC_TASKS_HEADERS_DISPLAY_H_ */

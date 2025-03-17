@@ -15,13 +15,14 @@ typedef enum boolean{
 
 #define CAN_DEBUG 1 //IN CAZUL IN CARE AVEM ERORI NEREGULATE PE CAN SI NU ARE ROST SA LE REZOLVAM
 
-void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c
-void can_status_recording(void); //see in tasks/can.c
+void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c//see in tasks/can.c
 void Can_receive_handler(void);
 void Can_transmit_handler(void);
-bool get_bms_state(const CAN_TxHeaderTypeDef* bms_header, uint32_t* bms_mailbox);
-void motor_control(const CAN_TxHeaderTypeDef *inv_motor_drive_header, uint32_t *inv_mailbox, bool bms_state);
-void set_invertor_data(uint8_t* inv_data, float mot_speed, float current_reffrence);
+bool get_bms_state(void);
+void motor_control(bool bms_state);
+void auxiliary_control(void);
+
+
 
 struct can_bus_errors
 {
@@ -43,37 +44,52 @@ struct mppt
 
 struct Battery_Management_Sys
 {
-	uint8_t rx_state;
+	uint8_t state;
 
+	float minimum_cell_temperatura;
+	float maximum_cell_temperature;
+
+	float minimum_cell_voltage;
+	float maximum_cell_voltage;
+
+	float State_Of_Charge;
+
+
+};
+
+struct Invertor_Sys
+{
+	float current_drawn;
+	float dc_bus_voltage;
 };
 
 struct Data_aquisition_can
 {
-	float bus_current;
-	float bus_voltage;
+	struct Battery_Management_Sys bms;
+	struct Invertor_Sys invertor;
 
 	struct mppt mppt1;
 	struct mppt mppt2;
 	struct mppt mppt3;
+};
 
-	struct Battery_Management_Sys bms;
-
+union reinterpret_cast
+{
+	float Float32;
+	uint32_t Uint32;
 };
 
 
-
-
-
-#define CAN_QUEUE_LENGTH 10 //20 MESSAGES
+#define CAN_QUEUE_LENGTH 20 //20 MESSAGES
 
 /*INVERTOR SIGNALS
  *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
  *  TX = INVERTOR TRANSMITS A MESSAGE, SO DASHBOARD/VCU RECEIVES
  */
 #define INV_RX_BASE_ADDR           0X500
-#define INV_RX_MOTOR_DRIVE         ( INV_TX_BASE_ADDR + 0x01 ) // 100ms
-#define INV_RX_MOTOR_POWER_COMMAND ( INV_TX_BASE_ADDR + 0X02 ) // 100 ms (NOT USED)
-#define INV_RX_RESET_COMMAND       ( INV_TX_BASE_ADDR + 0X03 ) // SOFTWARE OVERCURRENT COOMAND
+#define INV_RX_MOTOR_DRIVE         ( INV_RX_BASE_ADDR + 0x01 ) // 100ms
+#define INV_RX_MOTOR_POWER_COMMAND ( INV_RX_BASE_ADDR + 0X02 ) // 100 ms (NOT USED)
+#define INV_RX_RESET_COMMAND       ( INV_RX_BASE_ADDR + 0X03 ) // SOFTWARE OVERCURRENT COOMAND
 
 #define INV_TX_BASE_ADDR            0x400
 #define INV_TX_STATUS_INFO          ( INV_TX_BASE_ADDR + 0X01 ) // 200 ms
@@ -91,11 +107,13 @@ struct Data_aquisition_can
  */
 #define BMS_RX_STATE_CONTROL 0x505 //100ms
 
-#define BMU_TX_HEARTHBEAT 			0x600 // 1 sec
-#define BMU_TX_SOC       			0X6F4 // 1 sec
-#define BMU_TX_PRECHARGE_STATUS     0x6F7 // 1 sec
+#define BMS_TX_HEARTHBEAT 			    0x600 // 1 sec
+#define BMS_TX_SOC       			    0X6F4 // 1 sec
+#define BMS_TX_PRECHARGE_STATUS         0x6F7 // 1 sec
+#define BMS_TX_MIN_MAX_CELL_TEMPERATURE 0x6F9 // 1 sec
+#define BMS_TX_MIN_MAX_CELL_VOLTAGE     0x6F8 // 100ms
 
-#define CMU1_HEARTHBEAT //INTREABA l pe stefan cat e
+
 
 enum State {
 	IDLE = 0,
@@ -134,6 +152,15 @@ enum State {
 /*AUXILIARY SIGNAL START HERE */
 
 #define AUXILIARY_CONTROL 0X701
+
+#define AUX_BLINK_LEFT 0x01
+#define AUX_BLINK_RIGHT 0x02
+#define AUX_FAN 0x04
+#define AUX_BREAK_LIGHT 0x08
+#define AUX_HORN 0x10
+#define AUX_REAR_LIGHT 0x20
+#define AUX_CAMERA 0x40
+#define AUX_HEAD_LIGHTS 0x80
 
 /*AUXILIARY SIGNAL END HERE */
 

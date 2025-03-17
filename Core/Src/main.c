@@ -99,7 +99,6 @@ int main(void)
 	/* USER CODE BEGIN 2 */
 
 	/*************************************PERIPHERAL INITIALIZATION START HERE ***********************************************/
-
 	configASSERT(!HAL_CAN_Start(&hcan));
 	Display_Init();
 

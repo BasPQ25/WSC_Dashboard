@@ -17,38 +17,67 @@ void Can_receive_handler()
 {
 	struct Queue_Can_Msg msg;
 
-	/******************TASK CODE STARTS HERE ************************************/
 	while ( pdTRUE)
 	{
-
 		xQueueReceive(Can_Queue, (void*) &msg, portMAX_DELAY); //wait until something from ISR is getting
 
 		switch (msg.Identifier)
 		{
 
-		case BMU_TX_PRECHARGE_STATUS:
-
-			switch (msg.data[1]) {
+		case BMS_TX_PRECHARGE_STATUS:
+			switch (msg.data[1])
+			{  // Added opening brace
 			case 1:  // Idle
-				can_data.bms.rx_state = IDLE;
+				can_data.bms.state = IDLE;
 				break;
-			case 5:  // Enable Pack
-			case 2:  // Measure
-				break;
-			case 3:  // Pre-charge
-				can_data.bms.rx_state  = PRE_CHARGE;
-				break;
-			case 4:  // Run
-				can_data.bms.rx_state  = DRIVE;
-				break;
+			case 5:
+				can_data.bms.state = IDLE;
+				break;  // Enable Pack
+			case 2:
+				can_data.bms.state = IDLE;
+				break;  // Measure
+			case 3:
+				can_data.bms.state = PRE_CHARGE;
+				break;  // Pre-charge
+			case 4:
+				can_data.bms.state = DRIVE;
+				break;  // Run
 			case 0:
-				can_data.bms.rx_state  = ERR;
+				can_data.bms.state = ERR;
 				break;
 			default:
-				can_data.bms.rx_state = ERR;
+				can_data.bms.state = ERR;
 				break;
-			}
+			}  // Added closing brace
 
+			break;
+
+		case BMS_TX_SOC:
+
+			can_data.bms.State_Of_Charge = ((msg.data[7] << 24)
+					| (msg.data[6] << 16) | (msg.data[5] << 8) | msg.data[4]);
+
+			break;
+
+		case BMS_TX_MIN_MAX_CELL_TEMPERATURE:
+
+			can_data.bms.minimum_cell_temperatura = (float) (((msg.data[1] << 8)
+					| msg.data[0]) / 10);
+
+			can_data.bms.maximum_cell_temperature = (float) (((msg.data[3] << 8)
+					| msg.data[2]) / 10);
+
+			break;
+
+		case BMS_TX_MIN_MAX_CELL_VOLTAGE:
+
+			can_data.bms.minimum_cell_voltage = (float) (((msg.data[1] << 8)
+					| msg.data[0]) / 1000);
+
+			can_data.bms.maximum_cell_voltage = (float) (((msg.data[3] << 8)
+					| msg.data[2]) / 1000);
+
+			break;
 
 		case MPPT1_TX_POWER_MEASUREMENT:
 
@@ -108,13 +137,11 @@ void USB_LP_CAN_RX0_IRQHandler()
 	msg.Identifier = received_msg_header.StdId;
 	memcpy(msg.data, can_data_received, sizeof(can_data_received));
 
-	configASSERT(xQueueSendFromISR(Can_Queue, &msg, &xHigherPriorityTaskWoken));
+	xQueueSendFromISR(Can_Queue, &msg, &xHigherPriorityTaskWoken);
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
 #if (SEGGER_DEBUG_PROBE == 1)
 	SEGGER_SYSVIEW_RecordExitISR();
 #endif
 }
-
-
 

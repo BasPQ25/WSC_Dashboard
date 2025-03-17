@@ -35,7 +35,6 @@ extern "C" {
 #include"task.h"
 #include"queue.h"
 #include"lcd_driver.h"
-
 #include"all_tasks.h"
 
 #include<stdio.h>
