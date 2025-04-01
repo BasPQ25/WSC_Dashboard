@@ -21,13 +21,13 @@ void Can_transmit_handler(void);
 bool get_bms_state(void);
 void motor_control(bool bms_state);
 void auxiliary_control(void);
+void Can_error_handler();
 
 
-
-struct can_bus_errors
+union reinterpret_cast
 {
-	__IO uint8_t Tx_Error_Count;
-	__IO uint8_t Rx_Error_Count;
+	float Float32;
+	uint32_t Uint32;
 };
 
 struct Queue_Can_Msg
@@ -46,13 +46,16 @@ struct Battery_Management_Sys
 {
 	uint8_t state;
 
-	float minimum_cell_temperatura;
+	float minimum_cell_temperature;
 	float maximum_cell_temperature;
 
 	float minimum_cell_voltage;
 	float maximum_cell_voltage;
 
 	float State_Of_Charge;
+
+	union reinterpret_cast battery_voltage;
+	union reinterpret_cast battery_current;
 
 
 };
@@ -61,6 +64,13 @@ struct Invertor_Sys
 {
 	float current_drawn;
 	float dc_bus_voltage;
+
+	union reinterpret_cast motor_velocity;
+
+	union reinterpret_cast bus_current;
+	union reinterpret_cast bus_voltage;
+
+	uint8_t software_overcurrent_count;
 };
 
 struct Data_aquisition_can
@@ -73,14 +83,10 @@ struct Data_aquisition_can
 	struct mppt mppt3;
 };
 
-union reinterpret_cast
-{
-	float Float32;
-	uint32_t Uint32;
-};
 
 
-#define CAN_QUEUE_LENGTH 20 //20 MESSAGES
+
+#define CAN_QUEUE_LENGTH 10 //10 MESSAGES
 
 /*INVERTOR SIGNALS
  *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
@@ -99,6 +105,7 @@ union reinterpret_cast
 #define INV_TX_MOTOR_TEMP           ( INV_TX_BASE_ADDR + 0X0B ) // 1 sec
 #define INV_TX_ODOMETER             ( INV_TX_BASE_ADDR + 0X0E ) // 1 sec
 
+
 /* INVERTOR SIGNLAS END HERE*/
 
 /*BMS SIGNAL
@@ -107,13 +114,12 @@ union reinterpret_cast
  */
 #define BMS_RX_STATE_CONTROL 0x505 //100ms
 
-#define BMS_TX_HEARTHBEAT 			    0x600 // 1 sec
-#define BMS_TX_SOC       			    0X6F4 // 1 sec
-#define BMS_TX_PRECHARGE_STATUS         0x6F7 // 1 sec
-#define BMS_TX_MIN_MAX_CELL_TEMPERATURE 0x6F9 // 1 sec
-#define BMS_TX_MIN_MAX_CELL_VOLTAGE     0x6F8 // 100ms
-
-
+#define BMS_TX_HEARTHBEAT 			    	0x600 // 1 sec
+#define BMS_TX_SOC       			    	0X6F4 // 1 sec
+#define BMS_TX_PRECHARGE_STATUS         	0x6F7 // 1 sec
+#define BMS_TX_MIN_MAX_CELL_TEMPERATURE 	0x6F9 // 1 sec
+#define BMS_TX_MIN_MAX_CELL_VOLTAGE       	0x6F8 // 100ms
+#define BMS_TX_BATTERY_PACK_VOLTAGE_CURRENT 0x6FA // 100ms
 
 enum State {
 	IDLE = 0,
@@ -121,9 +127,6 @@ enum State {
 	DRIVE,
 	ERR
 };
-
-
-
 
 /*BMS SIGNAL END HERE */
 
@@ -136,8 +139,8 @@ enum State {
  *  TX = MPPT TRANSMITS A MESSAGE, SO DASHBOARD/VCU RECEIVES
  */
 #define MPPT1_TX_ADDR ( MPPT_BASE_ADDR )
-#define MPPT2_TX_ADDR ( MPPT_BASE_ADDR + 0X030 )
-#define MPPT3_TX_ADDR ( MPPT_BASE_ADDR + 0X040 )
+#define MPPT2_TX_ADDR ( MPPT_BASE_ADDR + 0X010 )
+#define MPPT3_TX_ADDR ( MPPT_BASE_ADDR + 0X020 )
 
 #define MPPT1_TX_POWER_MEASUREMENT (MPPT1_TX_ADDR + 0X000) // 500 ms
 #define MPPT2_TX_POWER_MEASUREMENT (MPPT2_TX_ADDR + 0X000) // 500 ms

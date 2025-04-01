@@ -1,14 +1,15 @@
 #include"main.h"
 
-#define PEDAL_MIN 500
-#define PEDAL_MAX 3530
+#define PEDAL_MIN 400U
+#define PEDAL_MAX 3530U
 
-#define FORWARD_MAX_VELOCITY  2000.0f
-#define REVERSE_MAX_VELOCITY -2000.0f
+#define FORWARD_MAX_VELOCITY  2000.0F
+#define REVERSE_MAX_VELOCITY -2000.0F
+#define REGEN_ON_BREAK 0.0F
 
-#define CONTROL_CURRENT_RAMP 1 // in %
-#define CONTROL_MAX_BUS_CURRENT_REFFRENCE_AT_STARTUP 100 // in %
-#define CONTROL_MAX_BUS_CURRENT_REFFRENCE_AT_DRIVE 100 // in %
+#define CONTROL_CURRENT_RAMP 100.0F // in %
+#define CONTROL_MAX_BUS_CURRENT_REFFRENCE_AT_STARTUP 100.0F // in %
+#define CONTROL_MAX_BUS_CURRENT_REFFRENCE_AT_DRIVE 100.0F // in %
 
 /**************************START GLOBAL VARIABLES**************************************/
 
@@ -17,6 +18,8 @@ extern ADC_HandleTypeDef hadc1;
 
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
+
+uint8_t Can_error_counter = 0;
 
 /**************************END GLOBAL VARIABLES****************************************/
 
@@ -37,6 +40,8 @@ void Can_transmit_handler()
 		bms_state = get_bms_state();
 
 //		INV control
+		//for testing
+		bms_state = TRUE;
 		motor_control(bms_state);
 
 //		AUX control
@@ -73,8 +78,11 @@ bool get_bms_state()
 		bms_state = FALSE;
 	}
 
-	HAL_CAN_AddTxMessage(&hcan, &bms_state_control_header, bms_data,
-			&bms_mailbox);
+	if( HAL_CAN_AddTxMessage(&hcan, &bms_state_control_header, bms_data,
+			&bms_mailbox) != HAL_OK)
+	{
+		Can_error_handler();
+	}
 
 	return bms_state;
 }
@@ -115,19 +123,24 @@ void motor_control(bool bms_state)
 			/ (float) (PEDAL_MAX - PEDAL_MIN);
 
 	if (current_reffrence.Float32
-			- last_current_reffrence.Float32>= CONTROL_CURRENT_RAMP)
+			- last_current_reffrence.Float32 >= CONTROL_CURRENT_RAMP)
 	{
 		current_reffrence.Float32 += CONTROL_CURRENT_RAMP;
 	}
-
-	if (buttons.panel.drv_forward == BUTTON_IS_PRESSED)
+	if(buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
+	{
+		velocity.Float32 = REGEN_ON_BREAK;
+	}
+	else if (buttons.panel.drv_forward == BUTTON_IS_PRESSED)
 	{
 		velocity.Float32 = FORWARD_MAX_VELOCITY;
 	}
+
 	else if (buttons.panel.drv_reverse == BUTTON_IS_PRESSED)
 	{
 		velocity.Float32 = REVERSE_MAX_VELOCITY;
 	}
+
 	else // neutral
 	{
 		current_reffrence.Float32 = 0.0f;
@@ -145,8 +158,11 @@ void motor_control(bool bms_state)
 	inv_data[6] = (current_reffrence.Uint32 >> 16) & 0xFF;
 	inv_data[7] = (current_reffrence.Uint32 >> 24) & 0xFF;
 
-	HAL_CAN_AddTxMessage(&hcan, &inv_motor_drive_header, inv_data,
-			&inv_mailbox);
+	if( HAL_CAN_AddTxMessage(&hcan, &inv_motor_drive_header, inv_data,
+			&inv_mailbox) )
+	{
+		Can_error_handler();
+	}
 
 }
 
@@ -179,6 +195,35 @@ void auxiliary_control()
 	if (buttons.panel.horn == BUTTON_IS_PRESSED)
 		auxiliary_can_data |= AUX_HORN;
 
-	HAL_CAN_AddTxMessage(&hcan, &aux_header, &auxiliary_can_data, &aux_mailbox);
+	if( HAL_CAN_AddTxMessage(&hcan, &aux_header, &auxiliary_can_data, &aux_mailbox) != HAL_OK)
+	{
+		Can_error_handler();
+	}
 }
 
+
+void Can_error_handler()
+{
+	__disable_irq();
+	taskENTER_CRITICAL();
+
+	if (HAL_CAN_DeInit(&hcan) != HAL_OK)
+			{
+				NVIC_SystemReset();
+			}
+			// Init CAN
+			if (HAL_CAN_Init(&hcan) != HAL_OK)
+			{
+				NVIC_SystemReset();
+			}
+			// Start CAN
+			if (HAL_CAN_Start(&hcan) != HAL_OK)
+			{
+				NVIC_SystemReset();
+			}
+
+	Can_error_counter++; // for tracking the number of errors
+
+	taskEXIT_CRITICAL();
+	__enable_irq();
+}
