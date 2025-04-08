@@ -14,9 +14,9 @@ void Buttons_handler()
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-		buttons.panel.powerON =
-				(HAL_GPIO_ReadPin(GPIOA, INPUT_POWER_ON_Pin)) ?
-						min(buttons.panel.powerON + 1, 3) : 0;
+//		buttons.panel.powerON =
+//				(HAL_GPIO_ReadPin(GPIOA, INPUT_POWER_ON_Pin)) ?
+//						min(buttons.panel.powerON + 1, 3) : 0;
 
 		buttons.panel.drv_forward =
 				(HAL_GPIO_ReadPin(GPIOC, INPUT_DRIVE_FORWARD_Pin)) ?

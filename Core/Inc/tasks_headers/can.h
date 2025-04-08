@@ -32,8 +32,11 @@ union reinterpret_cast
 
 struct Queue_Can_Msg
 {
-	uint32_t Identifier;
-	uint8_t data[8];
+    uint32_t Identifier;
+    union {
+        uint8_t byte[8];
+        uint32_t word[2];
+    } data;
 };
 
 struct mppt
@@ -85,8 +88,9 @@ struct Data_aquisition_can
 
 
 
-
-#define CAN_QUEUE_LENGTH 10 //10 MESSAGES
+//aditional buffer for message safety
+#define CAN_QUEUE_LENGTH 5 //10 MESSAGES
+#define TELEMETRY_QUEUE_LENGHT 5
 
 /*INVERTOR SIGNALS
  *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
@@ -166,5 +170,12 @@ enum State {
 #define AUX_HEAD_LIGHTS 0x80
 
 /*AUXILIARY SIGNAL END HERE */
+
+/* TELEMETRY RELATED DEFINES*/
+#define UART_MSG_LEN 16
+#define DMA_UART_MSG_CNT 20
+#define DMA_BUFFER_SIZE (UART_MSG_LEN * DMA_UART_MSG_CNT)
+#define CAN_MSG_LEN 8
+#define CRC_LENGTH 2
 
 #endif /* INC_TASKS_HEADERS_CAN_H_ */

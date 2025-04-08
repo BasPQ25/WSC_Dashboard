@@ -34,8 +34,11 @@ extern "C" {
 #include"FreeRTOS.h"
 #include"task.h"
 #include"queue.h"
+#include "semphr.h"
+
 #include"lcd_driver.h"
 #include"all_tasks.h"
+
 
 #include<stdio.h>
 #include<string.h>
@@ -99,10 +102,6 @@ void Error_Handler(void);
 #define INPUT_DISPLAY_SWITCH_GPIO_Port GPIOC
 #define INPUT_CRUISE_UP_Pin GPIO_PIN_8
 #define INPUT_CRUISE_UP_GPIO_Port GPIOA
-#define INPUT_CRUISE_ON_Pin GPIO_PIN_9
-#define INPUT_CRUISE_ON_GPIO_Port GPIOA
-#define INPUT_POWER_ON_Pin GPIO_PIN_10
-#define INPUT_POWER_ON_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14

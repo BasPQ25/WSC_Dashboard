@@ -11,7 +11,7 @@
 /*USER DEFINES HERE*/
 
 #define SEGGER_DEBUG_PROBE 1 //for debugging with segger
-#define TESTING_FOR_DEBUG 1
+#define TELEMETRY_SYSTEM_ON 1 // for telemetry on/off
 
 static inline uint16_t min(uint16_t a, uint16_t b) {
     return (a <= b) ? a : b;
