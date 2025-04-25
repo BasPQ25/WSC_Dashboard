@@ -10,8 +10,13 @@
 
 /*USER DEFINES HERE*/
 
+
+/* INTERFACE FOR DEFINES*/
+
 #define SEGGER_DEBUG_PROBE 1 //for debugging with segger
 #define TELEMETRY_SYSTEM_ON 1 // for telemetry on/off
+
+/* INTERFACE FOR DEFINES*/
 
 static inline uint16_t min(uint16_t a, uint16_t b) {
     return (a <= b) ? a : b;

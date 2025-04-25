@@ -41,10 +41,10 @@ void config_handler()
 
 	while (pdTRUE)
 	{
-		vTaskDelete(can_msg_handle);
-		vTaskDelete(can_transmit_handle);
-		vTaskDelete(display_handle);
-		vTaskDelete(buttons_handle);
+//		vTaskDelete(can_msg_handle);
+//		vTaskDelete(can_transmit_handle);
+//		vTaskDelete(display_handle);
+//		vTaskDelete(buttons_handle);
 		vTaskDelete(NULL);
 	}
 }

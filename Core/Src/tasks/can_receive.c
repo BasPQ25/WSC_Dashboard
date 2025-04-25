@@ -161,13 +161,10 @@ void USB_LP_CAN_RX0_IRQHandler()
 	static CAN_RxHeaderTypeDef received_msg_header;
 	static struct Queue_Can_Msg msg;
 
-//	HAL_CAN_IRQHandler(&hcan); // no need for callbacks
-
 	HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &received_msg_header,
 			msg.data.byte);
 
 	msg.Identifier = received_msg_header.StdId;
-//	memcpy(msg.data.byte, InterruptData.received, sizeof(InterruptData.received));
 
 #if( TELEMETRY_SYSTEM_ON == 1 )
 
@@ -205,9 +202,9 @@ void USB_LP_CAN_RX0_IRQHandler()
 #endif
 
 	//Transmit the message to the CAN_RECEIVE message
-//	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-//	xQueueSendToBackFromISR(Can_Queue, &msg, &xHigherPriorityTaskWoken); //send for Can Queue
-//	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+	xQueueSendToBackFromISR(Can_Queue, &msg, &xHigherPriorityTaskWoken); //send for Can Queue
+	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 
 #if (SEGGER_DEBUG_PROBE == 1)
 	SEGGER_SYSVIEW_RecordExitISR();

@@ -102,6 +102,8 @@ void Error_Handler(void);
 #define INPUT_DISPLAY_SWITCH_GPIO_Port GPIOC
 #define INPUT_CRUISE_UP_Pin GPIO_PIN_8
 #define INPUT_CRUISE_UP_GPIO_Port GPIOA
+#define INPUT_POWER_ON_Pin GPIO_PIN_10
+#define INPUT_POWER_ON_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14

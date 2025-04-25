@@ -204,7 +204,6 @@ void auxiliary_control()
 
 void Can_error_handler()
 {
-	__disable_irq();
 	taskENTER_CRITICAL();
 
 	if (HAL_CAN_DeInit(&hcan) != HAL_OK)
@@ -225,5 +224,4 @@ void Can_error_handler()
 	Can_error_counter++; // for tracking the number of errors
 
 	taskEXIT_CRITICAL();
-	__enable_irq();
 }
