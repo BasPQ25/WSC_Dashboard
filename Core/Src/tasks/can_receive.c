@@ -1,13 +1,15 @@
 #include"main.h"
 
 extern CAN_HandleTypeDef hcan;
-extern CRC_HandleTypeDef hcrc;
 extern UART_HandleTypeDef huart1;
 
 struct Data_aquisition_can can_data =
 { 0 }; //initialize everything with 0;
 
 extern QueueHandle_t Can_Queue;
+extern struct Modules_Activity ActivityCheck;
+
+struct Telemetry_RTC RealTimeClock;
 
 /*CAN MESSAGE TASK STARTS HERE*/
 
@@ -138,6 +140,21 @@ void Can_receive_handler()
 			}
 
 			break;
+
+		case TELEMETRY_RTC_RECEIVED:
+
+			RealTimeClock.seconds = msg.data.byte[0];
+			RealTimeClock.minutes = msg.data.byte[1];
+			RealTimeClock.hour    = msg.data.byte[2];
+			RealTimeClock.dow     = msg.data.byte[3];
+			RealTimeClock.dom     = msg.data.byte[4];
+
+			break;
+
+		case TELEMETRY_ACTIVITY_CHECK:
+
+			ActivityCheck.telemetry = 1;
+
 		default:
 			break;
 		}
@@ -148,9 +165,6 @@ void Can_receive_handler()
 /******************TASK CODE END HERE ************************************/
 
 /* CAN INTERRUPT STARTS HERE */
-static uint8_t dma_buffer[DMA_BUFFER_SIZE] = { 0 };
-static uint8_t dma_offset = 0;
-static uint8_t *const p_buffer = (uint8_t *)&dma_buffer;
 
 void USB_LP_CAN_RX0_IRQHandler()
 {
@@ -165,41 +179,6 @@ void USB_LP_CAN_RX0_IRQHandler()
 			msg.data.byte);
 
 	msg.Identifier = received_msg_header.StdId;
-
-#if( TELEMETRY_SYSTEM_ON == 1 )
-
-	//Calculate CRC for transmitting the message
-	uint32_t can_crc = 0;
-	if( HAL_CRC_GetState(&hcrc) == HAL_CRC_STATE_READY)
-	{
-		can_crc = HAL_CRC_Calculate(&hcrc,msg.data.word, CRC_LENGTH ); // automatic conversion for the newer stm32f303re HAL library
-	}
-
-	//Fill the DMA buffer
-	dma_buffer[UART_MSG_LEN * dma_offset +  0] = 0xFE; // Start padding
-	dma_buffer[UART_MSG_LEN * dma_offset +  1] = (msg.Identifier & 0x000000FF) >> 0;
-	dma_buffer[UART_MSG_LEN * dma_offset +  2] = (msg.Identifier & 0x0000FF00) >> 8;
-	dma_buffer[UART_MSG_LEN * dma_offset +  3] = msg.data.byte[0];
-	dma_buffer[UART_MSG_LEN * dma_offset +  4] = msg.data.byte[1];
-	dma_buffer[UART_MSG_LEN * dma_offset +  5] = msg.data.byte[2];
-	dma_buffer[UART_MSG_LEN * dma_offset +  6] = msg.data.byte[3];
-	dma_buffer[UART_MSG_LEN * dma_offset +  7] = msg.data.byte[4];
-	dma_buffer[UART_MSG_LEN * dma_offset +  8] = msg.data.byte[5];
-	dma_buffer[UART_MSG_LEN * dma_offset +  9] = msg.data.byte[6];
-	dma_buffer[UART_MSG_LEN * dma_offset + 10] = msg.data.byte[7];
-	dma_buffer[UART_MSG_LEN * dma_offset + 11] = (can_crc & 0x000000FF) >> 0;  // CRC-32 CAN data
-	dma_buffer[UART_MSG_LEN * dma_offset + 12] = (can_crc & 0x0000FF00) >> 8;  // CRC-32 CAN data
-	dma_buffer[UART_MSG_LEN * dma_offset + 13] = (can_crc & 0x00FF0000) >> 16; // CRC-32 CAN data
-	dma_buffer[UART_MSG_LEN * dma_offset + 14] = (can_crc & 0xFF000000) >> 24; // CRC-32 CAN data
-	dma_buffer[UART_MSG_LEN * dma_offset + 15] = 0x7F; // End padding
-
-	if (++dma_offset == DMA_UART_MSG_CNT)
-	{
-		dma_offset = 0;
-		HAL_UART_Transmit_DMA(&huart1, p_buffer, DMA_BUFFER_SIZE);
-	}
-
-#endif
 
 	//Transmit the message to the CAN_RECEIVE message
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;

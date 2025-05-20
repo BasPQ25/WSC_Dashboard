@@ -2,7 +2,7 @@
 
 
 TaskHandle_t display_handle, can_msg_handle, can_transmit_handle,
-		buttons_handle;
+		buttons_handle, RTC_handle;
 
 QueueHandle_t Can_Queue;
 

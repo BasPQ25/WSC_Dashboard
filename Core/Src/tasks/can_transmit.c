@@ -18,8 +18,9 @@ extern ADC_HandleTypeDef hadc1;
 
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
+extern enum display display_state;
 
-uint8_t Can_error_counter = 0;
+uint8_t Telemetry_Request_Feedback = 0;
 
 /**************************END GLOBAL VARIABLES****************************************/
 
@@ -30,21 +31,29 @@ void Can_transmit_handler()
 
 	bool bms_state = FALSE;
 
+
 	xLastWakeTime = xTaskGetTickCount();
 
 	while ( pdTRUE)
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-//      Bms drive/precharge or idle modes
-		bms_state = get_bms_state();
+		if( display_state == BOOT_DISPLAY )
+		{
+			Telemetry_RTC_Request();
 
-//		INV control
-		//for testing
-		bms_state = TRUE;
-		motor_control(bms_state);
+		}
+		else
+		{
+			//Bms drive/precharge or idle modes
+			bms_state = get_bms_state();
 
-//		AUX control
+			//INV control
+			bms_state = TRUE;
+			motor_control(bms_state);
+		}
+
+		//AUX control
 		auxiliary_control();
 
 	}
@@ -201,27 +210,16 @@ void auxiliary_control()
 	}
 }
 
-
-void Can_error_handler()
+void Telemetry_RTC_Request()
 {
-	taskENTER_CRITICAL();
+	static const CAN_TxHeaderTypeDef telemetry_header =
+	{ TELEMETRY_RTC_REQUEST, 0x00, CAN_RTR_DATA, CAN_ID_STD, 1, DISABLE };
+	static uint32_t telemetry_mailbox;
 
-	if (HAL_CAN_DeInit(&hcan) != HAL_OK)
-			{
-				NVIC_SystemReset();
-			}
-			// Init CAN
-			if (HAL_CAN_Init(&hcan) != HAL_OK)
-			{
-				NVIC_SystemReset();
-			}
-			// Start CAN
-			if (HAL_CAN_Start(&hcan) != HAL_OK)
-			{
-				NVIC_SystemReset();
-			}
-
-	Can_error_counter++; // for tracking the number of errors
-
-	taskEXIT_CRITICAL();
+	if( HAL_CAN_AddTxMessage(&hcan, &telemetry_header, 0x00, &telemetry_mailbox) != HAL_OK)
+	{
+		Can_error_handler();
+	}
 }
+
+

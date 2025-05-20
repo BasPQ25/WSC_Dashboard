@@ -14,14 +14,20 @@
 void Display_handler(void);
 void Display_Init(void);
 
-void Main_Display(char* buffer);
+void MAIN_Display(char* buffer);
 void MPPT_Display(char* buffer);
+void BOOT_Display(char* buffer);
+
+char* GetString(uint8_t status);
 
 enum display
 {
 	MAIN_DISPLAY = 0,
 	MPPT_DISPLAY,
+	BOOT_DISPLAY,
+	CAR_REVEAL_DISPLAY,
 	MAX_DISPLAY
+
 };
 
 #endif /* INC_TASKS_HEADERS_DISPLAY_H_ */

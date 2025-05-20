@@ -3709,7 +3709,7 @@ static void prvCheckTasksWaitingTermination( void )
                 }
                 taskEXIT_CRITICAL();
 
-                prvDeleteTCB( pxTCB );
+//                prvDeleteTCB( pxTCB );
             }
         }
     #endif /* INCLUDE_vTaskDelete */

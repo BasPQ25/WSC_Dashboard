@@ -24,7 +24,6 @@ void Buttons_handler()
 									min(buttons.panel.drv_reverse + 1, 3) : 0;
 
 		//auxiliary buttons
-
 		buttons.panel.head_lights  = (HAL_GPIO_ReadPin(GPIOB, INPUT_HEAD_LIGHTS_Pin) | HAL_GPIO_ReadPin(GPIOB, INPUT_ALL_LIGHTS_Pin)) ?
 									min(buttons.panel.head_lights + 1, 3) : 0;
 

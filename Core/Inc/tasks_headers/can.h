@@ -21,7 +21,7 @@ void Can_transmit_handler(void);
 bool get_bms_state(void);
 void motor_control(bool bms_state);
 void auxiliary_control(void);
-void Can_error_handler();
+void Telemetry_RTC_Request(void);
 
 
 union reinterpret_cast
@@ -172,10 +172,18 @@ enum State {
 /*AUXILIARY SIGNAL END HERE */
 
 /* TELEMETRY RELATED DEFINES*/
-#define UART_MSG_LEN 16
-#define DMA_UART_MSG_CNT 20
-#define DMA_BUFFER_SIZE (UART_MSG_LEN * DMA_UART_MSG_CNT)
-#define CAN_MSG_LEN 8
-#define CRC_LENGTH 2
+
+#define TELEMETRY_RTC_REQUEST 0x310    //random ID, used for RTC request
+#define TELEMETRY_RTC_RECEIVED 0x110   //random ID, used for RTC receive
+#define TELEMETRY_ACTIVITY_CHECK 0x130 //random ID, used for telemetry activity
+
+struct Telemetry_RTC
+{
+	uint8_t seconds;
+	uint8_t minutes;
+	uint8_t hour;
+	uint8_t dow;
+	uint8_t dom;
+};
 
 #endif /* INC_TASKS_HEADERS_CAN_H_ */
