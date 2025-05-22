@@ -1,7 +1,6 @@
 #include"main.h"
 
 extern CAN_HandleTypeDef hcan;
-extern UART_HandleTypeDef huart1;
 
 struct Data_aquisition_can can_data =
 { 0 }; //initialize everything with 0;

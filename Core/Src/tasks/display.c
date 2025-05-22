@@ -9,6 +9,7 @@ extern struct buttons_layout buttons;
 extern uint8_t Can_error_counter;
 extern struct Telemetry_RTC RealTimeClock;
 extern struct Modules_Activity ActivityCheck;
+extern struct buttons_layout buttons;
 
 
 void Display_handler()
@@ -89,12 +90,11 @@ void MAIN_Display(char *buffer)
 	if (can_data.mppt2.output_current >= MPPT_SIGN_ERROR_VALUE)
 		can_data.mppt2.output_current = 0;
 
-	float mppt_power =( (can_data.mppt1.output_current * can_data.mppt1.output_voltage) +
-			(can_data.mppt2.output_current * can_data.mppt2.output_voltage) );
+	float invertor_power = can_data.invertor.bus_current.Float32 * can_data.invertor.bus_voltage.Float32;
+	float bms_power = can_data.bms.battery_current.Float32 * can_data.bms.battery_voltage.Float32;
 
 	HD44780_SetCursor(0, 2);
-//	snprintf(buffer, 21, "SP: %5.1f   SWO: %d", mppt_power,can_data.invertor.software_overcurrent_count);
-	snprintf(buffer, 21, "MPPT:%4.1f INV:%4.1f", mppt_power, 0.0);
+	snprintf(buffer, 21, "I:  %5.1f BM:  %5.1f", invertor_power, bms_power);
 	HD44780_PrintStr(buffer);
 
 	//forth row
@@ -103,7 +103,7 @@ void MAIN_Display(char *buffer)
 
 	char drive_state[7] = "  IDLE";
 
-	can_data.bms.state = 0;
+	can_data.bms.state = PRE_CHARGE;
 	switch(can_data.bms.state)
 	{
 	case IDLE:
@@ -123,9 +123,14 @@ void MAIN_Display(char *buffer)
 	case ERR:
 		break;
 	}
-//	snprintf(buffer,21,"INV:  %5.1f CAN: %i", can_data.invertor.bus_voltage.Float32 * can_data.invertor.bus_current.Float32, Can_error_counter);
 
-	snprintf(buffer,21,"ERROR: NONE  %s", drive_state );
+	float mppt_power = ( (can_data.mppt1.output_current * can_data.mppt1.output_voltage) +
+				(can_data.mppt2.output_current * can_data.mppt2.output_voltage) );
+	snprintf(buffer,21,"P:  %5.1f %s %s", mppt_power,
+										  GetSign(buttons.wheel.blink_left,
+												  buttons.wheel.blink_right,
+												  buttons.wheel.avarie),
+										  drive_state);
 	HD44780_PrintStr(buffer);
 
 }
@@ -136,7 +141,7 @@ void MPPT_Display(char *buffer)
 		can_data.mppt1.output_current = 0;
 
 	HD44780_SetCursor(0, 0);
-	snprintf(buffer, 21, "MPPT1: %6.2f",
+	snprintf(buffer, 21, "MPPT1:  %6.2f",
 			can_data.mppt1.output_current * can_data.mppt1.output_voltage);
 	HD44780_PrintStr(buffer);
 
@@ -144,16 +149,24 @@ void MPPT_Display(char *buffer)
 		can_data.mppt2.output_current = 0;
 
 	HD44780_SetCursor(0, 1);
-	snprintf(buffer, 21, "MPPT2: %6.2f",
+	snprintf(buffer, 21, "MPPT2:  %6.2f",
 			can_data.mppt2.output_current * can_data.mppt2.output_voltage);
 	HD44780_PrintStr(buffer);
 
 	if (can_data.mppt3.output_current >= MPPT_SIGN_ERROR_VALUE)
 		can_data.mppt3.output_current = 0;
 	HD44780_SetCursor(0, 2);
-	snprintf(buffer, 21, "MPPT3: %6.2f",
+	snprintf(buffer, 21, "MPPT3:  %6.2f",
 			can_data.mppt3.output_current * can_data.mppt3.output_voltage);
 	HD44780_PrintStr(buffer);
+
+	if (can_data.mppt4.output_current >= MPPT_SIGN_ERROR_VALUE)
+			can_data.mppt4.output_current = 0;
+		HD44780_SetCursor(0, 3);
+		snprintf(buffer, 21, "MPPT4:  %6.2f",
+				can_data.mppt4.output_current * can_data.mppt4.output_voltage);
+		HD44780_PrintStr(buffer);
+
 }
 
 
@@ -162,7 +175,11 @@ void BOOT_Display(char* buffer)
 {
 
 	HD44780_SetCursor(0, 0);
-	snprintf(buffer, 21, "D:%02d.%02d Ora:%02d.%02d.%02d", RealTimeClock.dom, RealTimeClock.dow, RealTimeClock.hour, RealTimeClock.minutes, RealTimeClock.seconds);
+	snprintf(buffer, 21, "D:%02d.%02d Ora:%02d.%02d.%02d", RealTimeClock.dom,
+														   RealTimeClock.dow,
+														   RealTimeClock.hour,
+														   RealTimeClock.minutes,
+														   RealTimeClock.seconds);
 	HD44780_PrintStr(buffer);
 
 	HD44780_SetCursor(0, 1);
@@ -174,20 +191,14 @@ void BOOT_Display(char* buffer)
 	HD44780_PrintStr(buffer);
 
 	HD44780_SetCursor(0, 3);
-	snprintf(buffer,21,"1:%s2:%s3:%s4:%s",  GetString(ActivityCheck.mppt1),
+	snprintf(buffer,21," PV: %s %s %s %s",  GetString(ActivityCheck.mppt1),
 											GetString(ActivityCheck.mppt2),
 											GetString(ActivityCheck.mppt3),
 											GetString(ActivityCheck.mppt4));
 
 	HD44780_PrintStr(buffer);
 
-	ActivityCheck.auxiliary = 0;
-	ActivityCheck.telemetry = 0;
-	ActivityCheck.invertor  = 0;
-	ActivityCheck.mppt1 	= 0;
-	ActivityCheck.mppt2 	= 0;
-	ActivityCheck.mppt3 	= 0;
-	ActivityCheck.mppt4 	= 0;
+	memset(&ActivityCheck, 0, sizeof(ActivityCheck)); //set all the flags to 0
 
 }
 
@@ -195,4 +206,38 @@ char* GetString(uint8_t status)
 {
 	return ( status == 1 ) ? " ON": "OFF";
 }
+
+char* GetSign(uint8_t status_left, uint8_t status_right,uint8_t status_avarie)
+{
+	static char buffer[3];
+
+	if( status_avarie == 3 )
+	{
+		buffer[0] = '!';
+		buffer[1] = '!';
+		buffer[2] = '!';
+	}
+
+	else if( status_left == 3 )
+	{
+		buffer[0] = '<';
+		buffer[1] = '<';
+		buffer[2] = '<';
+	}
+	else if( status_right == 3 )
+	{
+		buffer[0] = '>';
+		buffer[1] = '>';
+		buffer[2] = '>';
+	}
+	else
+	{
+		buffer[0] = ' ';
+		buffer[1] = ' ';
+		buffer[2] = ' ';
+	}
+
+	return buffer;
+}
+
 

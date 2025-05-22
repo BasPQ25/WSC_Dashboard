@@ -19,6 +19,7 @@ void MPPT_Display(char* buffer);
 void BOOT_Display(char* buffer);
 
 char* GetString(uint8_t status);
+char* GetSign(uint8_t status_left, uint8_t status_right, uint8_t status_avarie);
 
 enum display
 {

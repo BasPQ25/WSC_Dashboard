@@ -84,6 +84,7 @@ struct Data_aquisition_can
 	struct mppt mppt1;
 	struct mppt mppt2;
 	struct mppt mppt3;
+	struct mppt mppt4;
 };
 
 
