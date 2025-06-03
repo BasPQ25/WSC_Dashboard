@@ -22,5 +22,4 @@ void Buzzer_handler() // 500ms timer, for buzzer activity when needed
 			Buzzer_state = !Buzzer_state;
 		}
 	}
-
 }
