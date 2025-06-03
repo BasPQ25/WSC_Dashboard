@@ -4,7 +4,6 @@ struct buttons_layout buttons;
 
 void Buttons_handler()
 {
-
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(50);
 
@@ -14,6 +13,7 @@ void Buttons_handler()
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
+		//panel related buttons
 		buttons.panel.powerON      = (HAL_GPIO_ReadPin(GPIOA, INPUT_POWER_ON_Pin)) ?
 									min(buttons.panel.powerON + 1, 3) : 0;
 

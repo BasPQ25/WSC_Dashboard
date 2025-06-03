@@ -13,15 +13,9 @@ typedef enum boolean{
 	TRUE
 }bool;
 
+
 #define CAN_DEBUG 1 //IN CAZUL IN CARE AVEM ERORI NEREGULATE PE CAN SI NU ARE ROST SA LE REZOLVAM
 
-void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c//see in tasks/can.c
-void Can_receive_handler(void);
-void Can_transmit_handler(void);
-bool get_bms_state(void);
-void motor_control(bool bms_state);
-void auxiliary_control(void);
-void Telemetry_RTC_Request(void);
 
 
 union reinterpret_cast
@@ -65,15 +59,14 @@ struct Battery_Management_Sys
 
 struct Invertor_Sys
 {
-	float current_drawn;
-	float dc_bus_voltage;
+	union reinterpret_cast motor_velocity; //Find this messages in can_receive.c at switch case: INV_TX_VELOCITY_MEASUREMENT
+	union reinterpret_cast motor_rpm;
 
-	union reinterpret_cast motor_velocity;
-
-	union reinterpret_cast bus_current;
+	union reinterpret_cast bus_current;    //Find this messages in can_receive.c at switch case: INV_TX_BUS_MEASUREMENT
 	union reinterpret_cast bus_voltage;
 
-	uint8_t software_overcurrent_count;
+	uint8_t software_overcurrent_count;    // Find this message in can_receive.c at switch case: INV_TX_STATUS_INFO
+	uint8_t rpm_updated;                   // Find this message in can_receive.c at switch() case: INV_TX_VELOCITY_MEASUREMENT
 };
 
 struct Data_aquisition_can
@@ -91,7 +84,6 @@ struct Data_aquisition_can
 
 //aditional buffer for message safety
 #define CAN_QUEUE_LENGTH 5 //10 MESSAGES
-#define TELEMETRY_QUEUE_LENGHT 5
 
 /*INVERTOR SIGNALS
  *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
@@ -146,14 +138,17 @@ enum State {
 #define MPPT1_TX_ADDR ( MPPT_BASE_ADDR )
 #define MPPT2_TX_ADDR ( MPPT_BASE_ADDR + 0X010 )
 #define MPPT3_TX_ADDR ( MPPT_BASE_ADDR + 0X020 )
+#define MPPT4_TX_ADDR ( MPPT_BASE_ADDR + 0x030 )
 
 #define MPPT1_TX_POWER_MEASUREMENT (MPPT1_TX_ADDR + 0X000) // 500 ms
 #define MPPT2_TX_POWER_MEASUREMENT (MPPT2_TX_ADDR + 0X000) // 500 ms
 #define MPPT3_TX_POWER_MEASUREMENT (MPPT3_TX_ADDR + 0X000) // 500 ms
+#define MPPT4_TX_POWER_MEASUREMENT (MPPT4_TX_ADDR + 0x000) // 500 ms
 
 #define MPPT1_TX_STATUS ( MPPT1_TX_ADDR + 0X01) // 1 second
 #define MPPT2_TX_STATUS ( MPPT2_TX_ADDR + 0X01) // 1 second
 #define MPPT3_TX_STATUS ( MPPT3_TX_ADDR + 0X01) // 1 second
+#define MPPT4_TX_STATUS ( MPPT4_TX_ADDR + 0X01) // 1 second
 
 /*MPPT SIGNAL END HERE */
 
@@ -170,13 +165,15 @@ enum State {
 #define AUX_CAMERA 0x40
 #define AUX_HEAD_LIGHTS 0x80
 
+#define AUXILIARY_TX_ACTIVITY_CHECK 0x700
+
 /*AUXILIARY SIGNAL END HERE */
 
 /* TELEMETRY RELATED DEFINES*/
 
-#define TELEMETRY_RTC_REQUEST 0x310    //random ID, used for RTC request
-#define TELEMETRY_RTC_RECEIVED 0x110   //random ID, used for RTC receive
-#define TELEMETRY_ACTIVITY_CHECK 0x130 //random ID, used for telemetry activity
+#define TELEMETRY_RX_RTC_REQUEST    0x310    //random ID, used for RTC request
+#define TELEMETRY_TX_RTC            0x110   //random ID, used for RTC receive
+#define TELEMETRY_TX_ACTIVITY_CHECK 0x130 //random ID, used for telemetry activity
 
 struct Telemetry_RTC
 {
@@ -185,6 +182,18 @@ struct Telemetry_RTC
 	uint8_t hour;
 	uint8_t dow;
 	uint8_t dom;
+	uint8_t month;
 };
+
+
+void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c//see in tasks/can.c
+void Can_receive_handler(void);
+void Can_transmit_handler(void);
+bool get_bms_state(void);
+void motor_control_pedal(void);
+void auxiliary_control(void);
+void Telemetry_RTC_Request(void);
+void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_cast current_reffrence);
+void motor_control_Prohelion_cruise(void);
 
 #endif /* INC_TASKS_HEADERS_CAN_H_ */

@@ -53,8 +53,7 @@ void Can_receive_handler()
 
 		case BMS_TX_SOC:
 
-			can_data.bms.State_Of_Charge = ((msg.data.byte[7] << 24)
-					| (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4]);
+			can_data.bms.State_Of_Charge = ((msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4]);
 
 			break;
 
@@ -86,11 +85,17 @@ void Can_receive_handler()
 			uint32_t battery_current = (msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4];
 			can_data.bms.battery_current.Float32 = (float)battery_current / 1000.0f;
 
+			ActivityCheck.bms = 1; //Find this variable used in display.c function BOOT_Display
+
 			break;
 
 		case INV_TX_VELOCITY_MEASUREMENT:
 
 			can_data.invertor.motor_velocity.Uint32 = (msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4];
+
+			can_data.invertor.motor_rpm.Uint32 =      (msg.data.byte[3] << 24) | (msg.data.byte[2] << 16) | (msg.data.byte[1] << 8) | msg.data.byte[0];
+
+			can_data.invertor.rpm_updated = 1; // Find this variable used in invertor.c function motor_control_Prohelion_cruise
 
 			break;
 
@@ -100,6 +105,8 @@ void Can_receive_handler()
 
 			can_data.invertor.bus_current.Uint32 = (msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4];
 
+			ActivityCheck.invertor = 1; //Find this variable used in display.c function BOOT_Display
+
 			break;
 
 		case MPPT1_TX_POWER_MEASUREMENT:
@@ -107,6 +114,9 @@ void Can_receive_handler()
 			can_data.mppt1.output_voltage = (float) (((msg.data.byte[4] << 8) | msg.data.byte[5]) * 0.01);
 
 			can_data.mppt1.output_current = (float) (((msg.data.byte[6] << 8) | msg.data.byte[7]) * 0.0005);
+
+			ActivityCheck.mppt1 = 1; //Find this variable used in display.c function BOOT_Display
+
 			break;
 
 		case MPPT2_TX_POWER_MEASUREMENT:
@@ -115,6 +125,8 @@ void Can_receive_handler()
 
 			can_data.mppt2.output_current = (float) (((msg.data.byte[6] << 8) | msg.data.byte[7]) * 0.0005);
 
+			ActivityCheck.mppt2 = 1; //Find this variable used in display.c function BOOT_Display
+
 			break;
 
 		case MPPT3_TX_POWER_MEASUREMENT:
@@ -122,6 +134,18 @@ void Can_receive_handler()
 			can_data.mppt3.output_voltage = (float) (((msg.data.byte[4] << 8) | msg.data.byte[5]) * 0.01);
 
 			can_data.mppt3.output_current = (float) (((msg.data.byte[6] << 8) | msg.data.byte[7]) * 0.0005);
+
+			ActivityCheck.mppt3 = 1; //Find this variable used in display.c function BOOT_Display
+
+			break;
+
+		case MPPT4_TX_POWER_MEASUREMENT:
+
+			can_data.mppt4.output_voltage = (float) (((msg.data.byte[4] << 8) | msg.data.byte[5]) * 0.01);
+
+			can_data.mppt4.output_current = (float) (((msg.data.byte[6] << 8) | msg.data.byte[7]) * 0.0005);
+
+			ActivityCheck.mppt4 = 1; //Find this variable used in display.c function BOOT_Display
 
 			break;
 
@@ -132,27 +156,36 @@ void Can_receive_handler()
 			if(msg.data.byte[2] && 0x02)
 			{
 				uint32_t error_mailbox = 0;
-
-				HAL_CAN_AddTxMessage(&hcan, &inv_error_header, 0x00, &error_mailbox); //transmit can frame for error reset
+				while( HAL_CAN_GetTxMailboxesFreeLevel(&hcan) == 0) //mandatory message, wait for it to be transmitted
+					HAL_CAN_AddTxMessage(&hcan, &inv_error_header, 0x00, &error_mailbox); //transmit can frame for error reset
 
 				can_data.invertor.software_overcurrent_count++;
 			}
 
 			break;
 
-		case TELEMETRY_RTC_RECEIVED:
+		case TELEMETRY_TX_RTC:
 
 			RealTimeClock.seconds = msg.data.byte[0];
 			RealTimeClock.minutes = msg.data.byte[1];
 			RealTimeClock.hour    = msg.data.byte[2];
 			RealTimeClock.dow     = msg.data.byte[3];
 			RealTimeClock.dom     = msg.data.byte[4];
+			RealTimeClock.month   = msg.data.byte[5];
 
 			break;
 
-		case TELEMETRY_ACTIVITY_CHECK:
+		case TELEMETRY_TX_ACTIVITY_CHECK:
 
 			ActivityCheck.telemetry = 1;
+
+			break;
+
+		case AUXILIARY_TX_ACTIVITY_CHECK:
+
+			ActivityCheck.auxiliary = 1;
+
+			break;
 
 		default:
 			break;

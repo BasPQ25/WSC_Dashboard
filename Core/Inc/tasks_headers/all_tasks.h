@@ -7,6 +7,8 @@
 #include"display.h"
 #include"buttons.h"
 #include"error.h"
+#include"PID.h"
+#include"cruise.h"
 /*END USER INCLUDES*/
 
 /*USER DEFINES HERE*/
@@ -26,6 +28,9 @@ static inline uint16_t max(uint16_t a, uint16_t b)
 	return (a <= b) ? b : a;
 }
 
+#define PEDAL_MIN 400U
+#define PEDAL_MAX 3530U
+
 /*END USER DEFINES*/
 
 /*FUNCTION PROTOTYPES FROM TASKS HERE */
@@ -36,6 +41,7 @@ static inline uint16_t max(uint16_t a, uint16_t b)
 
 void Software_config(void);
 void config_handler(void);
+void Buzzer_handler(void);
 
 /*GENERAL FUNCTIONS PROTOTYPES END HERE*/
 
