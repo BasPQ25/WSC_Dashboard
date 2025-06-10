@@ -49,7 +49,7 @@ void motor_control_pedal()
 	{
 		velocity.Float32 = REGEN_ON_BREAK;
 	}
-	else if (buttons.panel.drv_forward == BUTTON_IS_PRESSED)
+	else if ( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
 	{
 		velocity.Float32 = FORWARD_MAX_VELOCITY;
 	}

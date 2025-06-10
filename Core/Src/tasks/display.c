@@ -1,7 +1,7 @@
 #include"main.h"
 
 /*variable that will increase when the switch display is pressed*/
-enum display display_state = BOOT_DISPLAY;
+enum display display_state = MAIN_DISPLAY;
 
 void Display_handler()
 {

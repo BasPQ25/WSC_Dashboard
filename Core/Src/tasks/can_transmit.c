@@ -27,7 +27,7 @@ void Can_transmit_handler()
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
 		//error checking before transmitting messages
-		if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan) == 0 || HAL_CAN_GetError(&hcan) != HAL_CAN_ERROR_NONE ) //check if the FIFO is blocked
+		if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan) == 0 || HAL_CAN_GetError(&hcan) == HAL_CAN_ERROR_BOF ) //check if the FIFO is blocked or Bus off
 		{
 			if(++can_error_count == 5) //500ms consecutive error
 			{
@@ -43,6 +43,10 @@ void Can_transmit_handler()
 
 		bms_state = get_bms_state();
 
+#if ( TESTING_BEFORE_CAR_DONE  == 1 )
+		bms_state = TRUE;
+
+#endif
 		if( display_state == BOOT_DISPLAY ) Telemetry_RTC_Request();
 		else
 		{

@@ -49,6 +49,10 @@ void Can_receive_handler()
 				break;
 			}  // Added closing brace
 
+#if( TESTING_BEFORE_CAR_DONE == 1)
+			can_data.bms.state = DRIVE;
+#endif
+
 			break;
 
 		case BMS_TX_SOC:
