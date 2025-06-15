@@ -17,7 +17,6 @@
 /* INTERFACE FOR DEFINES*/
 
 #define SEGGER_DEBUG_PROBE 1 //for debugging with segger
-#define TESTING_BEFORE_CAR_DONE 1 //for car testing
 /* INTERFACE FOR DEFINES*/
 
 static inline uint16_t min(uint16_t a, uint16_t b) {

@@ -171,8 +171,6 @@ enum State {
 
 /* TELEMETRY RELATED DEFINES*/
 
-#define TELEMETRY_RX_RTC_REQUEST    0x310    //random ID, used for RTC request
-#define TELEMETRY_TX_RTC            0x110   //random ID, used for RTC receive
 #define TELEMETRY_TX_ACTIVITY_CHECK 0x130 //random ID, used for telemetry activity
 
 struct Telemetry_RTC
@@ -192,7 +190,6 @@ void Can_transmit_handler(void);
 bool get_bms_state(void);
 void motor_control_pedal(void);
 void auxiliary_control(void);
-void Telemetry_RTC_Request(void);
 void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_cast current_reffrence);
 void motor_control_Prohelion_cruise(void);
 

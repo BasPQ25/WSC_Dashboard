@@ -168,7 +168,7 @@ void Can_receive_handler()
 
 			break;
 
-		case TELEMETRY_TX_RTC:
+		case TELEMETRY_TX_ACTIVITY_CHECK:
 
 			RealTimeClock.seconds = msg.data.byte[0];
 			RealTimeClock.minutes = msg.data.byte[1];
@@ -176,10 +176,6 @@ void Can_receive_handler()
 			RealTimeClock.dow     = msg.data.byte[3];
 			RealTimeClock.dom     = msg.data.byte[4];
 			RealTimeClock.month   = msg.data.byte[5];
-
-			break;
-
-		case TELEMETRY_TX_ACTIVITY_CHECK:
 
 			ActivityCheck.telemetry = 1;
 

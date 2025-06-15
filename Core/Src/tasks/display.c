@@ -2,6 +2,8 @@
 
 /*variable that will increase when the switch display is pressed*/
 enum display display_state = MAIN_DISPLAY;
+extern struct buttons_layout buttons;
+extern struct buttons_layout previous_button_state;
 
 void Display_handler()
 {
@@ -15,6 +17,15 @@ void Display_handler()
 	while ( pdTRUE)
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
+		//THIS BUTTON IS PRESSED IN buttons.c  at the STEERING WHEEL section(line 49)
+		if(buttons.wheel.display_switch == BUTTON_IS_PRESSED)
+		{
+			if( ++display_state == MAX_DISPLAY ) display_state = MAIN_DISPLAY; // show next display
+
+			buttons.wheel.display_switch = UNPRESS_BUTTON;
+			previous_button_state.wheel.display_switch = TRUE;
+		}
 
 		switch (display_state)
 		{

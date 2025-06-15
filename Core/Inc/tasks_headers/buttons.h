@@ -9,6 +9,7 @@
 #define INC_TASKS_HEADERS_BUTTONS_H_
 
 void Buttons_handler(void);
+bool Steering_Wheel_Reading(uint8_t button);
 
 struct right_panel
 {
@@ -26,13 +27,14 @@ struct right_panel
 
 struct steering_wheel
 {
-	uint8_t blink_left;
+	uint8_t display_switch;
 	uint8_t blink_right;
+	uint8_t blink_left;
 	uint8_t brake_swap;
-	uint8_t avarie;
-	uint8_t cruise_up;
 	uint8_t cruise_down;
+	uint8_t cruise_up;
 	uint8_t cruise_on;
+	uint8_t avarie;
 };
 
 struct mechanical_pedal
@@ -47,5 +49,6 @@ struct buttons_layout
 };
 
 #define BUTTON_IS_PRESSED 3
+#define UNPRESS_BUTTON 0
 
 #endif /* INC_TASKS_HEADERS_BUTTONS_H_ */

@@ -21,5 +21,10 @@ void Buzzer_handler() // 500ms timer, for buzzer activity when needed
 			HAL_GPIO_WritePin(GPIOC, OUTPUT_BUZZER_Pin, Buzzer_state);
 			Buzzer_state = !Buzzer_state;
 		}
+		else
+		{
+			HAL_GPIO_WritePin(GPIOC, OUTPUT_BUZZER_Pin, FALSE);
+			Buzzer_state = GPIO_PIN_SET;
+		}
 	}
 }

@@ -55,7 +55,6 @@ void MAIN_Display(char *buffer)
 
 	char drive_state[7] = "  IDLE";
 
-	can_data.bms.state = PRE_CHARGE;
 	switch(can_data.bms.state)
 	{
 	case IDLE:
@@ -94,7 +93,7 @@ void MPPT_Display(char *buffer)
 		can_data.mppt1.output_current = 0;
 
 	HD44780_SetCursor(0, 0);
-	snprintf(buffer, 21, "MPPT1:  %6.2f",
+	snprintf(buffer, 21, "MPPT1:  %6.2f      ",
 			can_data.mppt1.output_current * can_data.mppt1.output_voltage);
 	HD44780_PrintStr(buffer);
 
@@ -102,21 +101,21 @@ void MPPT_Display(char *buffer)
 		can_data.mppt2.output_current = 0;
 
 	HD44780_SetCursor(0, 1);
-	snprintf(buffer, 21, "MPPT2:  %6.2f",
+	snprintf(buffer, 21, "MPPT2:  %6.2f      ",
 			can_data.mppt2.output_current * can_data.mppt2.output_voltage);
 	HD44780_PrintStr(buffer);
 
 	if (can_data.mppt3.output_current >= MPPT_SIGN_ERROR_VALUE)
 		can_data.mppt3.output_current = 0;
 	HD44780_SetCursor(0, 2);
-	snprintf(buffer, 21, "MPPT3:  %6.2f",
+	snprintf(buffer, 21, "MPPT3:  %6.2f      ",
 			can_data.mppt3.output_current * can_data.mppt3.output_voltage);
 	HD44780_PrintStr(buffer);
 
 	if (can_data.mppt4.output_current >= MPPT_SIGN_ERROR_VALUE)
 			can_data.mppt4.output_current = 0;
 		HD44780_SetCursor(0, 3);
-		snprintf(buffer, 21, "MPPT4:  %6.2f",
+		snprintf(buffer, 21, "MPPT4:  %6.2f      ",
 				can_data.mppt4.output_current * can_data.mppt4.output_voltage);
 		HD44780_PrintStr(buffer);
 
@@ -164,20 +163,20 @@ char* GetSign(uint8_t status_left, uint8_t status_right,uint8_t status_avarie)
 {
 	static char buffer[3];
 
-	if( status_avarie == 3 )
+	if( status_avarie == BUTTON_IS_PRESSED )
 	{
 		buffer[0] = '!';
 		buffer[1] = '!';
 		buffer[2] = '!';
 	}
 
-	else if( status_left == 3 )
+	else if( status_left == BUTTON_IS_PRESSED )
 	{
 		buffer[0] = '<';
 		buffer[1] = '<';
 		buffer[2] = '<';
 	}
-	else if( status_right == 3 )
+	else if( status_right == BUTTON_IS_PRESSED )
 	{
 		buffer[0] = '>';
 		buffer[1] = '>';

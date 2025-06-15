@@ -9,7 +9,7 @@
 #define INC_TASKS_HEADERS_ERROR_H_
 
 
-void Can_error_handler(void);
+void Can_error_checking(void);
 
 struct Modules_Activity
 {
