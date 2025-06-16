@@ -1,16 +1,18 @@
 #include"main.h"
 
 extern CAN_HandleTypeDef hcan;
+extern QueueHandle_t Can_Queue; // USED FOR BLOCKING THE Can_received_handler() IF EMPTY.
+extern struct Modules_Activity ActivityCheck; // USED FOR THE BOOT_DISPLAY TO SHOW IF ALL THE MODULES FROM THE BUS ARE CONNECTED.
 
-struct Data_aquisition_can can_data =
-{ 0 }; //initialize everything with 0;
+struct Data_aquisition_can can_data ={ 0 }; // USED FOR EVERY INFORMATION RECEIVED FROM THE CAN BUS.
+struct Telemetry_RTC RealTimeClock; // USED FOR TELEMETRY CLOCK RECEIVED ( LINE 171 ).
 
-extern QueueHandle_t Can_Queue;
-extern struct Modules_Activity ActivityCheck;
-
-struct Telemetry_RTC RealTimeClock;
-
-/*CAN MESSAGE TASK STARTS HERE*/
+/* FREERTOS TASK FOR RECEIVING CAN MESSAGES.
+ * THIS TASK RECEIVES THE CAN MESSAGE FROM THE INTERRUPT ( LINE 203 IN THIS FILE ).
+ * IT USES A FREERTOS LOCK MECHANISM, SO ONLY WHEM A MESSAGE IS IN THE QUEUE
+ * THE TASK WILL EXIT THE BLOCKED STATE.
+ * AFTER READING THE INFORMATION FROM THE MESSAGE IT WILL BE POPPED FROM THE QUEUE.
+ */
 
 void Can_receive_handler()
 {
@@ -48,10 +50,6 @@ void Can_receive_handler()
 				can_data.bms.state = ERR;
 				break;
 			}  // Added closing brace
-
-#if( TESTING_BEFORE_CAR_DONE == 1)
-			can_data.bms.state = DRIVE;
-#endif
 
 			break;
 
@@ -194,10 +192,12 @@ void Can_receive_handler()
 	}
 
 }
-/******************TASK CODE END HERE ************************************/
 
-/* CAN INTERRUPT STARTS HERE */
-
+/* CAN BUS INTERRUPT STARTS HERE.
+ * DASHBOARD HAS NO CAN FILTERS, SO EVERY CAN MESSAGE WILL BE RECEIVED.
+ * THIS FUNCTION WILL TRANSMIT THE MESSAGE RECEIVED TO THE Can_receive_handler()
+ * USING  A QUEUE MECHANISM FOR AVOIDING MESSAGES LOSS
+*/
 void USB_LP_CAN_RX0_IRQHandler()
 {
 #if (SEGGER_DEBUG_PROBE == 1)

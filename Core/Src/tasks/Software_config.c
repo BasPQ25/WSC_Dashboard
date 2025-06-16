@@ -3,11 +3,15 @@
 
 TaskHandle_t display_handle, can_msg_handle, can_transmit_handle,
 		buttons_handle, RTC_handle, buzzer_handle;
-
 QueueHandle_t Can_Queue;
 
 extern CAN_HandleTypeDef hcan;
 
+/* FREERTOS CONFIGURATION TASK.
+ * THIS TASK RUNS ONLY ONCE AT THE START-UP.
+ * IT IS RESPONSIBLE FOR CREATING EVERY TASK THAT WILL RUN AFTERWARDS.
+ * IT WAS CREATED BECAUSE INTERRUPTS SHOULD BE CREATED AFTER THE SCHEDULER STARTS ( EXEMPLE LINE 55 ).
+ */
 void config_handler()
 {
 
@@ -20,7 +24,7 @@ void config_handler()
 //		vTaskDelete(display_handle);
 //		vTaskDelete(buttons_handle);
 //		vTaskDelete(buzzer_handle);
-		vTaskDelete(NULL);
+		vTaskDelete(NULL); // DELETS ITSELF
 	}
 }
 

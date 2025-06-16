@@ -1,18 +1,16 @@
 #include"main.h"
 
-
-/**************************START GLOBAL VARIABLES**************************************/
-
 extern CAN_HandleTypeDef hcan;
-
-
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
 extern enum display display_state;
 
-/**************************END GLOBAL VARIABLES****************************************/
 
-void Can_transmit_handler()
+/* FREERTOS TASK FOR TRANSMITING THE MESSAGES FOR BMS, INVERTOR AND AUXILIARY.
+ * RUNS EVERY 100MS.
+ * HAS THE BIGGEST PRIORITY, SO IT WILL PREEPT EVERYONE ONCE IT IS IN PENDING STATE.
+ */
+void Can_transmit_handler() // 100 MS
 {
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(100);
@@ -26,23 +24,16 @@ void Can_transmit_handler()
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-		//error checking before transmitting messages
+/********** ERROR CHECKING BEFORE TRANSMITIING THE MESSAGES ***********/
 		Can_error_checking();
 
-		//BMS CONTROL
+/********** BATTERY MANAGEMENT SYSTEM CONTROL ***********/
 		bms_state = get_bms_state();
 
-		//INV control
-		if( bms_state == TRUE )
-		{
-			if( buttons.wheel.cruise_on == BUTTON_IS_PRESSED )
-			{
-				motor_control_Prohelion_cruise();
-			}
-			else motor_control_pedal();
-		}
+/********** INVERTOR ACCELERATION / REGENERATION BREAK / CRUISE CONTROL ***********/
+		if( bms_state == TRUE ) motor_control();
 
-		//AUX control
+/********** AUXILIARY CONTROL ***********/
 		auxiliary_control();
 	}
 }

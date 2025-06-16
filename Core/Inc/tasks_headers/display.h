@@ -23,9 +23,9 @@ char* GetSign(uint8_t status_left, uint8_t status_right, uint8_t status_avarie);
 
 enum display
 {
-	MAIN_DISPLAY = 0,
+	BOOT_DISPLAY = 0,
+	MAIN_DISPLAY,
 	MPPT_DISPLAY,
-	BOOT_DISPLAY,
 	MAX_DISPLAY
 
 };

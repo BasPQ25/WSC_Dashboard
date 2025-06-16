@@ -9,7 +9,10 @@
 #define INC_TASKS_HEADERS_BUTTONS_H_
 
 void Buttons_handler(void);
-bool Steering_Wheel_Reading(uint8_t button);
+bool Steering_Wheel_Reading(uint8_t adress);
+void Rising_Edge_Toggle(uint8_t* button, uint8_t adress , uint8_t* prev_button_state, bool trigger_schmitt_polarity);
+void Rising_Edge_Press(uint8_t* button, uint8_t adress , uint8_t* prev_button_state);
+void Rising_Edge_Release(uint8_t* button, uint8_t* prev_button_state);
 
 struct right_panel
 {
@@ -49,6 +52,6 @@ struct buttons_layout
 };
 
 #define BUTTON_IS_PRESSED 3
-#define UNPRESS_BUTTON 0
+#define RELEASE_BUTTON 0
 
 #endif /* INC_TASKS_HEADERS_BUTTONS_H_ */

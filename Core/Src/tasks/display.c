@@ -1,10 +1,17 @@
 #include"main.h"
 
-/*variable that will increase when the switch display is pressed*/
-enum display display_state = MAIN_DISPLAY;
+
+enum display display_state = BOOT_DISPLAY; // USED FOR SWITCHING DISPLAYS WHEN THE DISPLAY_SWITCH BUTTON IS PRESSED.
 extern struct buttons_layout buttons;
 extern struct buttons_layout previous_button_state;
 
+/* FREERTOS TASK FOR LCD DISPLAY.
+ * RUNS EVERY 500 MS.
+ * MAIN DISPLAY RESPECTS THE REGULATION FOR DATA AQUISITION AND SATEFY FOR THE WORLD SOLAR CHALLANGE.
+ * BOOT DISPLAY SHOWS THE REAL TIME CLOCK RECEIVED FROM TELEMEYRY SISTEMS AND
+ * CHECKS IF EVERY MODULE IS CONNECTED TO THE BUS.
+ * MPPT DISPLAY SHOWS THE POWER PRODUCES FROM EVERY MPPT. ON THE MAIN SCREEN WE HAVE ONLY THE SUM.
+ */
 void Display_handler()
 {
 	char buffer[21];
@@ -21,10 +28,10 @@ void Display_handler()
 		//THIS BUTTON IS PRESSED IN buttons.c  at the STEERING WHEEL section(line 49)
 		if(buttons.wheel.display_switch == BUTTON_IS_PRESSED)
 		{
-			if( ++display_state == MAX_DISPLAY ) display_state = MAIN_DISPLAY; // show next display
+			if( ++display_state == MAX_DISPLAY ) display_state = BOOT_DISPLAY; // show next display
 
-			buttons.wheel.display_switch = UNPRESS_BUTTON;
-			previous_button_state.wheel.display_switch = TRUE;
+			Rising_Edge_Release(	&buttons.wheel.display_switch,
+									&previous_button_state.wheel.display_switch);
 		}
 
 		switch (display_state)

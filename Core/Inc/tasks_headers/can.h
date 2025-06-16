@@ -188,9 +188,8 @@ void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c//see in tasks/can.c
 void Can_receive_handler(void);
 void Can_transmit_handler(void);
 bool get_bms_state(void);
-void motor_control_pedal(void);
+void motor_control(void);
 void auxiliary_control(void);
 void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_cast current_reffrence);
-void motor_control_Prohelion_cruise(void);
 
 #endif /* INC_TASKS_HEADERS_CAN_H_ */

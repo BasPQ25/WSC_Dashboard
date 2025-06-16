@@ -3,85 +3,102 @@
 #define FORWARD_MAX_VELOCITY  2000.0F
 #define REVERSE_MAX_VELOCITY -2000.0F
 #define REGEN_ON_BREAK 0.0F
-
-#define CONTROL_CURRENT_RAMP 100.0F // in %
+#define SAFETY_CUT_CRUISE_CONTROL 0.2F //IF THE DRIVER PRESSES THE PEDAL MORE THAN THIS POINT, THE CRUISE WILL STOP
 
 extern ADC_HandleTypeDef hadc1;
 extern CAN_HandleTypeDef hcan;
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
+extern struct buttons_layout previous_button_state;
 
 static union reinterpret_cast velocity;
-static union reinterpret_cast current_reffrence;
-static union reinterpret_cast last_current_reffrence;
+static union reinterpret_cast current_reffrence = {0}; // THIS ONE IS NOT THE SAME AS THE ONE IN THE pedal.c file
 
-void motor_control_pedal()
+/*
+ * DRIVING MECHANISM EXPLAINED:
+ * DRIVER CAN ACCELERATE IF YOU ARE IN CRUISE CONTROL, BUT IT WILL NOT CUT THE CRUISE
+ * SO THE DRIVER CAN ADAPT IS SPEED WITH PEDAL.
+ * THE SAME GOES WITH GENERATIVE BREAKING, THE DRIVER CAN ADAPT ITS SPEED WITH REGEN.
+ */
+void motor_control()
 {
-	uint16_t pedal_value = 0;
+	static enum Driving_Mode Drive_Mode = 0;
 
-	taskENTER_CRITICAL();
+	current_reffrence.Float32 = convert_pedal_to_current();
 
-	HAL_ADC_Start(&hadc1);
-
-	if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
+	if( buttons.wheel.cruise_on == BUTTON_IS_PRESSED )
 	{
-		pedal_value = HAL_ADC_GetValue(&hadc1);
+		if( 	current_reffrence.Float32   <  SAFETY_CUT_CRUISE_CONTROL ||
+				buttons.wheel.brake_swap   !=  BUTTON_IS_PRESSED         ||
+				buttons.pedal.brake_lights != BUTTON_IS_PRESSED)
+		{
+			Drive_Mode = CRUISE_CONTROL_MODE;
+		}
+		else
+		{
+			Drive_Mode = PEDAL_ACCELERATION_MODE;
+			Rising_Edge_Release( 	&buttons.wheel.cruise_on,
+									&previous_button_state.wheel.cruise_on);
+		}
+	}
+	else Drive_Mode = PEDAL_ACCELERATION_MODE;
+
+
+	switch( Drive_Mode )
+	{
+		case PEDAL_ACCELERATION_MODE:
+
+			if(buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
+					velocity.Float32 = REGEN_ON_BREAK;
+
+			else if ( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
+					velocity.Float32 = FORWARD_MAX_VELOCITY;
+
+			else if (buttons.panel.drv_reverse == BUTTON_IS_PRESSED)
+					velocity.Float32 = REVERSE_MAX_VELOCITY;
+
+			else // neutral
+			{
+					current_reffrence.Float32 = 0.0f;
+					velocity.Float32 = 0.0f;
+			}
+
+			break;
+
+		case CRUISE_CONTROL_MODE:
+
+			current_reffrence.Float32 = 1.0f; //MAXIMUM CURRENT REFFRENCE
+
+			if( can_data.invertor.rpm_updated == 1 )
+			{
+					velocity.Float32 = can_data.invertor.motor_rpm.Float32;
+					can_data.invertor.rpm_updated = 0;
+			}
+
+			if( buttons.wheel.cruise_up == BUTTON_IS_PRESSED )
+			{
+				velocity.Float32 += 10.0f;
+				Rising_Edge_Release(	&buttons.wheel.cruise_up,
+										&previous_button_state.wheel.cruise_on);
+			}
+
+			else if( buttons.wheel.cruise_down == BUTTON_IS_PRESSED )
+			{
+				velocity.Float32 -= 10.0f;
+				Rising_Edge_Release(	&buttons.wheel.cruise_down,
+												&previous_button_state.wheel.cruise_down);
+			}
+
+			break;
+
+		case SOLAR_ONLY_MODE:
+
+			//NOT IMPLEMENTED YET, FOR FUTURE IMPROVEMENTS
+		break;
 	}
 
-	HAL_ADC_Stop(&hadc1);
-
-	taskEXIT_CRITICAL();
-
-	pedal_value = min(pedal_value, PEDAL_MAX);
-	pedal_value = max(pedal_value, PEDAL_MIN);
-
-	last_current_reffrence.Float32 = current_reffrence.Float32;
-
-	current_reffrence.Float32 = (float) (pedal_value - PEDAL_MIN)
-			/ (float) (PEDAL_MAX - PEDAL_MIN);
-
-	if (current_reffrence.Float32
-			- last_current_reffrence.Float32 >= CONTROL_CURRENT_RAMP)
-	{
-		current_reffrence.Float32 += CONTROL_CURRENT_RAMP;
-	}
-	if(buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
-	{
-		velocity.Float32 = REGEN_ON_BREAK;
-	}
-	else if ( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
-	{
-		velocity.Float32 = FORWARD_MAX_VELOCITY;
-	}
-
-	else if (buttons.panel.drv_reverse == BUTTON_IS_PRESSED)
-	{
-		velocity.Float32 = REVERSE_MAX_VELOCITY;
-	}
-
-	else // neutral
-	{
-		current_reffrence.Float32 = 0.0f;
-		velocity.Float32 = 0.0f;
-	}
 
 	//insert the values into the can bytes
-	Transmit_motor_control(velocity, current_reffrence);
-}
-
-void motor_control_Prohelion_cruise()
-{
-	current_reffrence.Float32 = 1.0f;
-
-	if(can_data.invertor.rpm_updated == 1)
-	{
-		velocity.Float32 = can_data.invertor.motor_rpm.Float32;
-		can_data.invertor.rpm_updated = 0;
-	}
-
-	if( buttons.wheel.cruise_up == BUTTON_IS_PRESSED ) velocity.Float32 += 10.0f;
-	if( buttons.wheel.cruise_down == BUTTON_IS_PRESSED ) velocity.Float32 -= 10.0f;
-
 	Transmit_motor_control(velocity, current_reffrence);
 }
 

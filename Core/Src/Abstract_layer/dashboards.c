@@ -64,9 +64,14 @@ void MAIN_Display(char *buffer)
 		strncpy(drive_state, "PRECRG", sizeof(drive_state));
 		break;
 	case DRIVE:
-		if( buttons.panel.drv_forward)
-			strncpy(drive_state, "Dr.FWD", sizeof(drive_state));
-		else if( buttons.panel.drv_reverse)
+		if( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
+		{
+			if( buttons.wheel.cruise_on == BUTTON_IS_PRESSED )
+				strncpy(drive_state, "CRUISE", sizeof(drive_state));
+			else
+				strncpy(drive_state, "Dr.FWD", sizeof(drive_state));
+		}
+		else if( buttons.panel.drv_reverse == BUTTON_IS_PRESSED )
 			strncpy(drive_state, "Dr.RVS", sizeof(drive_state));
 		else
 			strncpy(drive_state, "NEUTRU", sizeof(drive_state));
