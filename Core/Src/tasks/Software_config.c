@@ -30,7 +30,6 @@ void config_handler()
 
 void Software_config()
 {
-
 	configASSERT(
 			xTaskCreate((TaskFunction_t) Display_handler, "Display", 2000, NULL, 2, &display_handle));
 

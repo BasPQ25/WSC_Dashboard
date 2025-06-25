@@ -43,7 +43,6 @@ void motor_control()
 	}
 	else Drive_Mode = PEDAL_ACCELERATION_MODE;
 
-
 	switch( Drive_Mode )
 	{
 		case PEDAL_ACCELERATION_MODE:
@@ -96,7 +95,6 @@ void motor_control()
 			//NOT IMPLEMENTED YET, FOR FUTURE IMPROVEMENTS
 		break;
 	}
-
 
 	//insert the values into the can bytes
 	Transmit_motor_control(velocity, current_reffrence);
