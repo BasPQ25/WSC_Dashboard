@@ -3,6 +3,7 @@
 extern CAN_HandleTypeDef hcan;
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
+extern struct Can_transmitted CAN_transmitted;
 
 bool get_bms_state()
 {

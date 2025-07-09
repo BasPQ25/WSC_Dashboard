@@ -22,7 +22,7 @@ float convert_pedal_to_current()
 
 		HAL_ADC_Stop(&hadc1);
 
-		taskEXIT_CRITICAL();
+	taskEXIT_CRITICAL();
 
 		pedal_value = min(pedal_value, PEDAL_MAX);
 		pedal_value = max(pedal_value, PEDAL_MIN);

@@ -2,6 +2,7 @@
 
 extern struct buttons_layout buttons;
 extern CAN_HandleTypeDef hcan;
+extern struct Can_transmitted CAN_transmitted;
 
 void auxiliary_control()
 {
@@ -33,5 +34,4 @@ void auxiliary_control()
 		auxiliary_can_data |= AUX_HORN;
 
 	HAL_CAN_AddTxMessage(&hcan, &aux_header, &auxiliary_can_data, &aux_mailbox);
-
 }

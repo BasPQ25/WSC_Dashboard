@@ -17,7 +17,6 @@ typedef enum boolean{
 #define CAN_DEBUG 1 //IN CAZUL IN CARE AVEM ERORI NEREGULATE PE CAN SI NU ARE ROST SA LE REZOLVAM
 
 
-
 union reinterpret_cast
 {
 	float Float32;
@@ -83,7 +82,8 @@ struct Data_aquisition_can
 
 
 //aditional buffer for message safety
-#define CAN_QUEUE_LENGTH 5 //10 MESSAGES
+#define CAN_QUEUE_LENGTH 5
+#define CAN_TRANSMIT_QUEUE_LENGTH 5
 
 /*INVERTOR SIGNALS
  *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
@@ -183,6 +183,7 @@ struct Telemetry_RTC
 	uint8_t month;
 };
 
+#define GPS_TX_LAT_AND_LONG 0x032 // maximum priority to get rid of it as fast as possible
 
 void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c//see in tasks/can.c
 void Can_receive_handler(void);

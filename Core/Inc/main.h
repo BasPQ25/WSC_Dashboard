@@ -40,6 +40,7 @@ extern "C" {
 #include"all_tasks.h"
 
 
+
 #include<stdio.h>
 #include<string.h>
 
@@ -80,8 +81,6 @@ void Error_Handler(void);
 #define INPUT_HORN_GPIO_Port GPIOA
 #define GPS_TX_Pin GPIO_PIN_2
 #define GPS_TX_GPIO_Port GPIOA
-#define GPS_RX_Pin GPIO_PIN_3
-#define GPS_RX_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
 #define INPUT_CRUISE_DOWN_Pin GPIO_PIN_7

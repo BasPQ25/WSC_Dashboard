@@ -55,6 +55,8 @@ void Display_handler()
 
 		case MAX_DISPLAY:
 
+			display_state  = BOOT_DISPLAY;
+
 			break;
 
 		default:

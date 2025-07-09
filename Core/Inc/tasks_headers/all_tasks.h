@@ -7,8 +7,8 @@
 #include"display.h"
 #include"buttons.h"
 #include"error.h"
-#include"PID.h"
 #include"cruise.h"
+#include"GPS.h"
 /*END USER INCLUDES*/
 
 /*USER DEFINES HERE*/
@@ -41,6 +41,7 @@ static inline uint16_t max(uint16_t a, uint16_t b)
 void Software_config(void);
 void config_handler(void);
 void Buzzer_handler(void);
+
 /*GENERAL FUNCTIONS PROTOTYPES END HERE*/
 
 #endif /* INC_ALL_TASKS_H_ */
