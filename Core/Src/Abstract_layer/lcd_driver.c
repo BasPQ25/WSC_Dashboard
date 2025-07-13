@@ -208,7 +208,7 @@ static void Write4Bits(uint8_t value) {
 
 static void ExpanderWrite(uint8_t _data) {
 	uint8_t data = _data | dpBacklight;
-	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*) &data, 1, 10);
+	HAL_I2C_Master_Transmit(&hi2c1, DEVICE_ADDR, (uint8_t*) &data, 1, 300);
 }
 
 static void PulseEnable(uint8_t _data) {

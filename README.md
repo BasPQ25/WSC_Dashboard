@@ -35,3 +35,7 @@ A0 in dreapta de tot, A1 mijloc, A2 stanga
 	110 - CRUISE ON      D6
 	111 - AVARIE         D7 
 	
+	
+	#idei care nu mergeau:
+		Atentie la timeout-urile de la comunicatii produse de task-uri prea indelungate..
+		
