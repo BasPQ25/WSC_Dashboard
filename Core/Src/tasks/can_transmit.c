@@ -34,6 +34,7 @@ void Can_transmit_handler() // 100 MS
 		bms_state = get_bms_state();
 
 /********** INVERTOR ACCELERATION / REGENERATION BREAK / CRUISE CONTROL ***********/
+		bms_state = TRUE;
 		if( bms_state == TRUE ) motor_control();
 
 /********** AUXILIARY CONTROL ***********/

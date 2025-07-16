@@ -42,6 +42,7 @@ void motor_control()
 									&previous_button_state.wheel.cruise_on);
 		}
 	}
+
 	else Drive_Mode = PEDAL_ACCELERATION_MODE;
 
 	switch( Drive_Mode )

@@ -207,6 +207,8 @@ void USB_LP_CAN_RX0_IRQHandler()
 	static CAN_RxHeaderTypeDef received_msg_header;
 	static struct Queue_Can_Msg msg;
 
+	HAL_CAN_IRQHandler(&hcan);
+
 	HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &received_msg_header,
 			msg.data.byte);
 

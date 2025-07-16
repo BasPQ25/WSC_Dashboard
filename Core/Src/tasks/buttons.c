@@ -1,6 +1,6 @@
 #include"main.h"
 
-struct buttons_layout buttons;
+struct buttons_layout buttons = {0};
 struct buttons_layout previous_button_state = {FALSE};
 
 extern struct steering_wheel Wheel_Adress;

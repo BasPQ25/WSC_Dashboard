@@ -55,6 +55,9 @@ void MAIN_Display(char *buffer)
 
 	char drive_state[7] = "  IDLE";
 
+	can_data.bms.state = DRIVE;
+	buttons.panel.drv_forward = BUTTON_IS_PRESSED;
+
 	switch(can_data.bms.state)
 	{
 	case IDLE:
