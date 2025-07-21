@@ -5,12 +5,10 @@
 #define REGEN_ON_BREAK 0.0F
 #define SAFETY_CUT_CRUISE_CONTROL 0.2F //IF THE DRIVER PRESSES THE PEDAL MORE THAN THIS POINT, THE CRUISE WILL STOP
 
-extern ADC_HandleTypeDef hadc1;
 extern CAN_HandleTypeDef hcan;
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
 extern struct buttons_layout previous_button_state;
-extern struct Can_transmitted CAN_transmitted;
 
 static union reinterpret_cast velocity;
 static union reinterpret_cast current_reffrence = {0}; // THIS ONE IS NOT THE SAME AS THE ONE IN THE pedal.c file
