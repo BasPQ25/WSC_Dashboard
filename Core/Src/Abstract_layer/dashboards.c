@@ -8,6 +8,9 @@ extern uint8_t Can_error_counter;
 extern struct Telemetry_RTC RealTimeClock;
 extern struct Modules_Activity ActivityCheck;
 extern struct buttons_layout buttons;
+extern CAN_HandleTypeDef hcan;
+
+struct pop_up_error pop_up_error_condition;
 
 
 void Display_Init()
@@ -160,6 +163,34 @@ void BOOT_Display(char* buffer)
 
 	memset(&ActivityCheck, 0, sizeof(ActivityCheck)); //set all the flags to 0
 
+}
+
+void Can_Error_Display(char* buffer)
+{
+	uint8_t tec = (uint8_t)((hcan.Instance->ESR >> 16) & 0xFF);
+	uint8_t rec = (uint8_t)((hcan.Instance->ESR) & 0xFF);
+
+	HD44780_SetCursor(0, 0);
+	snprintf(buffer,21,"TEC:  %d", tec);
+	HD44780_PrintStr(buffer);
+
+	HD44780_SetCursor(0, 1);
+	snprintf(buffer,21,"REC:  %d", rec);
+	HD44780_PrintStr(buffer);
+
+	HD44780_SetCursor(0, 2);
+	snprintf(buffer,"SWO:  %d", can_data.invertor.software_overcurrent_count);
+	HD44780_PrintStr(buffer);
+
+
+}
+
+void Pop_Up_Error_Display(char* buffer)
+{
+	if( pop_up_error_condition.regen_break_fault == TRUE )
+	{
+
+	}
 }
 
 char* GetString(uint8_t status)

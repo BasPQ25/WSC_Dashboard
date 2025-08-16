@@ -23,5 +23,10 @@ struct Modules_Activity
 	uint8_t mppt4;
 };
 
+struct pop_up_error
+{
+	uint8_t regen_break_fault; //THE REGEN BUTTON WAS PRESSED WHEN THE ACCEL PEDAL WAS PRESSED
+};
+
 
 #endif /* INC_TASKS_HEADERS_ERROR_H_ */

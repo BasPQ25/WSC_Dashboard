@@ -10,13 +10,13 @@ void Can_error_checking( void )
 {
 	if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan) == 0 || HAL_CAN_GetError(&hcan) == HAL_CAN_ERROR_BOF ) //check if the FIFO is blocked or Bus off
 	{
-
 		if(++can_error_count_500ms == 5) //500ms consecutive error
 		{
+//			uint32_t test = 0;
+//			test = HAL_CAN_GetError(&hcan);
+//			uint8_t testingg = 0;
 
-			uint32_t test = 0;
-			test = HAL_CAN_GetError(&hcan);
-			uint8_t testingg = 0;
+			while(1) {}
 
 			taskENTER_CRITICAL();
 					HAL_CAN_Stop(&hcan);  // Clean stop, optional
@@ -33,7 +33,6 @@ void Can_error_checking( void )
 				    }
 
 					HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
-
 
 				    Can_error_counter++;
 		    taskEXIT_CRITICAL();

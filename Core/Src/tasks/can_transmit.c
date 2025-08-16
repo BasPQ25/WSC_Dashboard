@@ -1,13 +1,11 @@
 #include"main.h"
 
-extern CAN_HandleTypeDef hcan;
-extern struct Data_aquisition_can can_data;
-extern struct buttons_layout buttons;
-extern enum display display_state;
 extern uint8_t GPS_reading_status;
 extern union reinterpret_cast decimalLong;
 extern union reinterpret_cast decimalLat;
 extern uint8_t satelliteNumber;
+
+extern CAN_HandleTypeDef hcan;
 
 
 /* FREERTOS TASK FOR TRANSMITING THE MESSAGES FOR BMS, INVERTOR AND AUXILIARY.
@@ -23,18 +21,21 @@ void Can_transmit_handler() // 100 MS
 
 	xLastWakeTime = xTaskGetTickCount();
 
-	while ( pdTRUE)
+	while ( pdTRUE )
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
 /********** ERROR CHECKING BEFORE TRANSMITIING THE MESSAGES ***********/
-		Can_error_checking();
+//		Can_error_checking(); //AUTOMATIC BUS-OFF MANAGEMENT ENABLED, MIGHT BE BETTER WITH THAT SOLUTION
 
 /********** BATTERY MANAGEMENT SYSTEM CONTROL ***********/
 		bms_state = get_bms_state();
 
 /********** INVERTOR ACCELERATION / REGENERATION BREAK / CRUISE CONTROL ***********/
+#if (PIT_TESTING == 1)
 		bms_state = TRUE;
+#endif
+
 		if( bms_state == TRUE ) motor_control();
 
 /********** AUXILIARY CONTROL ***********/

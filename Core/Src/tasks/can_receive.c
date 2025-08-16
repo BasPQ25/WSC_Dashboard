@@ -7,6 +7,8 @@ extern struct Modules_Activity ActivityCheck; // USED FOR THE BOOT_DISPLAY TO SH
 struct Data_aquisition_can can_data ={ 0 }; // USED FOR EVERY INFORMATION RECEIVED FROM THE CAN BUS.
 struct Telemetry_RTC RealTimeClock; // USED FOR TELEMETRY CLOCK RECEIVED ( LINE 171 ).
 
+uint32_t max_temp_value = 36;
+uint32_t min_temp_value;
 /* FREERTOS TASK FOR RECEIVING CAN MESSAGES.
  * THIS TASK RECEIVES THE CAN MESSAGE FROM THE INTERRUPT ( LINE 203 IN THIS FILE ).
  * IT USES A FREERTOS LOCK MECHANISM, SO ONLY WHEM A MESSAGE IS IN THE QUEUE
@@ -18,7 +20,7 @@ void Can_receive_handler()
 {
 	struct Queue_Can_Msg msg;
 
-	while ( pdTRUE)
+	while (pdTRUE)
 	{
 		xQueueReceive(Can_Queue, (void*) &msg, portMAX_DELAY); //no need to block, the semaphore does this job
 
@@ -61,10 +63,10 @@ void Can_receive_handler()
 
 		case BMS_TX_MIN_MAX_CELL_TEMPERATURE:
 
-			uint32_t min_temp_value = ((msg.data.byte[1] << 8) | msg.data.byte[0]);
+			min_temp_value = ((msg.data.byte[1] << 8) | msg.data.byte[0]);
 			can_data.bms.minimum_cell_temperature = (float)min_temp_value / 10.0f;
 
-			uint32_t max_temp_value = (( msg.data.byte[3] << 8) | msg.data.byte[2]);
+			max_temp_value = (( msg.data.byte[3] << 8) | msg.data.byte[2]);
 			can_data.bms.maximum_cell_temperature = (float)max_temp_value / 10.0f;
 
 			break;
@@ -188,7 +190,6 @@ void Can_receive_handler()
 		default:
 			break;
 		}
-
 	}
 
 }

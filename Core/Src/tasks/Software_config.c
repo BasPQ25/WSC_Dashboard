@@ -17,14 +17,13 @@ SemaphoreHandle_t GPS_Semaphore;
  */
 void config_handler()
 {
-
 	Software_config();
 
 	while (pdTRUE)
 	{
 //		vTaskDelete(can_msg_handle);
 //		vTaskDelete(can_transmit_handle);
-		vTaskDelete(display_handle);
+//		vTaskDelete(display_handle);
 		vTaskDelete(buttons_handle);
 		vTaskDelete(buzzer_handle);
 		vTaskDelete(GPS_handle);
@@ -68,6 +67,3 @@ void Software_config()
 			!HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING));
 
 }
-
-
-

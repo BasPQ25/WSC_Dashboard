@@ -104,7 +104,7 @@ int main(void)
 
 	/*************************************PERIPHERAL INITIALIZATION START HERE ***********************************************/
 	configASSERT(!HAL_CAN_Start(&hcan));
-//	Display_Init();
+	Display_Init();
 
 	/*************************************PERIPHERAL INITIALIZATION END HERE ***********************************************/
 #if (SEGGER_DEBUG_PROBE == 1)
@@ -268,7 +268,7 @@ static void MX_CAN_Init(void)
   hcan.Init.TimeSeg1 = CAN_BS1_15TQ;
   hcan.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan.Init.TimeTriggeredMode = DISABLE;
-  hcan.Init.AutoBusOff = DISABLE;
+  hcan.Init.AutoBusOff = ENABLE;
   hcan.Init.AutoWakeUp = DISABLE;
   hcan.Init.AutoRetransmission = DISABLE;
   hcan.Init.ReceiveFifoLocked = DISABLE;
@@ -451,10 +451,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : INPUT_BRAKE_LIGHTS_Pin INPUT_ALL_LIGHTS_Pin INPUT_REAR_LIGHTS_Pin INPUT_HEAD_LIGHTS_Pin
-                           INPUT_ECHO_STD_MODE_Pin */
-  GPIO_InitStruct.Pin = INPUT_BRAKE_LIGHTS_Pin|INPUT_ALL_LIGHTS_Pin|INPUT_REAR_LIGHTS_Pin|INPUT_HEAD_LIGHTS_Pin
-                          |INPUT_ECHO_STD_MODE_Pin;
+  /*Configure GPIO pins : INPUT_BRAKE_LIGHTS_Pin INPUT_ALL_LIGHTS_Pin INPUT_REAR_LIGHTS_Pin INPUT_HEAD_LIGHTS_Pin */
+  GPIO_InitStruct.Pin = INPUT_BRAKE_LIGHTS_Pin|INPUT_ALL_LIGHTS_Pin|INPUT_REAR_LIGHTS_Pin|INPUT_HEAD_LIGHTS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -479,18 +477,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(CHIP_SELECT_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : INPUT_FAN_Pin INPUT_DATA_STEERING_WHEEL_Pin */
+  GPIO_InitStruct.Pin = INPUT_FAN_Pin|INPUT_DATA_STEERING_WHEEL_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   /*Configure GPIO pin : ADDR2_OUTPUT_STEERING_WHEEL_Pin */
   GPIO_InitStruct.Pin = ADDR2_OUTPUT_STEERING_WHEEL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(ADDR2_OUTPUT_STEERING_WHEEL_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : INPUT_DATA_STEERING_WHEEL_Pin */
-  GPIO_InitStruct.Pin = INPUT_DATA_STEERING_WHEEL_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(INPUT_DATA_STEERING_WHEEL_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

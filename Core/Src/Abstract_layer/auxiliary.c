@@ -2,7 +2,6 @@
 
 extern struct buttons_layout buttons;
 extern CAN_HandleTypeDef hcan;
-extern struct Can_transmitted CAN_transmitted;
 
 void auxiliary_control()
 {
@@ -33,5 +32,10 @@ void auxiliary_control()
 	if (buttons.panel.horn == BUTTON_IS_PRESSED)
 		auxiliary_can_data |= AUX_HORN;
 
+	if (buttons.panel.fan = BUTTON_IS_PRESSED)
+		auxiliary_can_data |= AUX_FAN;
+
+
 	HAL_CAN_AddTxMessage(&hcan, &aux_header, &auxiliary_can_data, &aux_mailbox);
 }
+

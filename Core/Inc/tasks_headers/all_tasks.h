@@ -27,9 +27,9 @@ static inline uint16_t max(uint16_t a, uint16_t b)
 	return (a <= b) ? b : a;
 }
 
-#define PEDAL_MIN 400U
+#define PEDAL_MIN 600U
 #define PEDAL_MAX 3530U
-
+#define PIT_TESTING 1
 /*END USER DEFINES*/
 
 /*FUNCTION PROTOTYPES FROM TASKS HERE */

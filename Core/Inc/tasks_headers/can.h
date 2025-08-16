@@ -40,8 +40,6 @@ struct mppt
 
 struct Battery_Management_Sys
 {
-	uint8_t state;
-
 	float minimum_cell_temperature;
 	float maximum_cell_temperature;
 
@@ -53,6 +51,7 @@ struct Battery_Management_Sys
 	union reinterpret_cast battery_voltage;
 	union reinterpret_cast battery_current;
 
+	uint8_t state;
 
 };
 
@@ -190,7 +189,10 @@ void Can_receive_handler(void);
 void Can_transmit_handler(void);
 bool get_bms_state(void);
 void motor_control(void);
+void Cruise_Control_Mode(void);
+void Pedal_Mode(void);
 void auxiliary_control(void);
+uint8_t Fan_Control(void);
 void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_cast current_reffrence);
 
 #endif /* INC_TASKS_HEADERS_CAN_H_ */

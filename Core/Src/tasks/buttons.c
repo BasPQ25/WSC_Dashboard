@@ -1,9 +1,13 @@
 #include"main.h"
 
+#define MIN_CELL_TEMPERATURE_FOR_FAN 35
+#define MAX_CELL_TEMPERATURE_FOR_FAN 45
+
 struct buttons_layout buttons = {0};
 struct buttons_layout previous_button_state = {FALSE};
 
 extern struct steering_wheel Wheel_Adress;
+extern uint32_t max_temp_value;
 /*
  * FREERTOS TASK FOR READING THE BUTTONS.
  * IT RUNS EVERY 50 MS.
@@ -49,6 +53,8 @@ void Buttons_handler()
 		buttons.panel.horn         = (HAL_GPIO_ReadPin(GPIOA, INPUT_HORN_Pin)) ?
 									min(buttons.panel.horn + 1, BUTTON_IS_PRESSED) : 0;
 
+		buttons.panel.fan          =  Fan_Control();
+
 		/********** MECHANICAL BRAKE ***********/
 		buttons.pedal.brake_lights = (HAL_GPIO_ReadPin(GPIOB, INPUT_BRAKE_LIGHTS_Pin)) ?
 									min(buttons.pedal.brake_lights + 1, BUTTON_IS_PRESSED) : 0;
@@ -93,5 +99,28 @@ void Buttons_handler()
 							Wheel_Adress.cruise_up,
 							&previous_button_state.wheel.cruise_up);
 	}
+}
+
+uint8_t Fan_Control()
+{
+	static uint8_t fan_state;
+	static bool fan_working;
+
+	fan_state = (HAL_GPIO_ReadPin(GPIOB, INPUT_FAN_Pin)) ?
+	min( fan_state + 1, BUTTON_IS_PRESSED) : 0;
+
+	if( max_temp_value >= MAX_CELL_TEMPERATURE_FOR_FAN )
+	{
+		fan_state   = BUTTON_IS_PRESSED;
+		fan_working = TRUE;
+	}
+
+	if( max_temp_value < MIN_CELL_TEMPERATURE_FOR_FAN && fan_working == TRUE)
+	{
+		fan_state   = RELEASE_BUTTON;
+		fan_working = FALSE;
+	}
+
+	return fan_state;
 }
 

@@ -27,4 +27,11 @@ Core/Src \
 Core/Src/tasks \
 Core/Startup \
 Drivers/STM32F3xx_HAL_Driver/Src \
+ThirdParty/FreeRTOS \
+ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F \
+ThirdParty/FreeRTOS/portable/MemMang \
+ThirdParty/SEGGER/Config \
+ThirdParty/SEGGER/OS \
+ThirdParty/SEGGER/SEGGER \
+ThirdParty/SEGGER/SEGGER/Syscalls \
 

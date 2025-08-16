@@ -1,7 +1,7 @@
 #include"main.h"
 
 
-enum display display_state = BOOT_DISPLAY; // USED FOR SWITCHING DISPLAYS WHEN THE DISPLAY_SWITCH BUTTON IS PRESSED.
+enum display display_state = CAN_ERROR_DISPLAY; // USED FOR SWITCHING DISPLAYS WHEN THE DISPLAY_SWITCH BUTTON IS PRESSED.
 extern struct buttons_layout buttons;
 extern struct buttons_layout previous_button_state;
 
@@ -36,6 +36,13 @@ void Display_handler()
 
 		switch (display_state)
 		{
+
+		case BOOT_DISPLAY:
+
+			BOOT_Display(buffer);
+
+			break;
+
 		case MAIN_DISPLAY:
 
 			MAIN_Display(buffer);
@@ -47,9 +54,16 @@ void Display_handler()
 			MPPT_Display(buffer);
 
 			break;
-		case BOOT_DISPLAY:
 
-			BOOT_Display(buffer);
+		case CAN_ERROR_DISPLAY:
+
+			Can_Error_Display(buffer);
+
+			break;
+
+		case POP_UP_ERROR_DISPLAY:
+
+			Pop_Up_Error_Display(buffer);
 
 			break;
 

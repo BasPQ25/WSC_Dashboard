@@ -3,7 +3,6 @@
 extern CAN_HandleTypeDef hcan;
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
-extern struct Can_transmitted CAN_transmitted;
 
 bool get_bms_state()
 {
@@ -33,8 +32,8 @@ bool get_bms_state()
 		bms_state = FALSE;
 	}
 
-
 	HAL_CAN_AddTxMessage(&hcan, &bms_state_control_header, bms_data, &bms_mailbox);
+
 
 	return bms_state;
 }

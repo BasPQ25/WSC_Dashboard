@@ -47,46 +47,13 @@ void motor_control()
 	{
 		case PEDAL_ACCELERATION_MODE:
 
-			if(buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
-					velocity.Float32 = REGEN_ON_BREAK;
-
-			else if ( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
-					velocity.Float32 = FORWARD_MAX_VELOCITY;
-
-			else if (buttons.panel.drv_reverse == BUTTON_IS_PRESSED)
-					velocity.Float32 = REVERSE_MAX_VELOCITY;
-
-			else // neutral
-			{
-					current_reffrence.Float32 = 0.0f;
-					velocity.Float32 = 0.0f;
-			}
+			Pedal_Mode();
 
 			break;
 
 		case CRUISE_CONTROL_MODE:
 
-			current_reffrence.Float32 = 1.0f; //MAXIMUM CURRENT REFFRENCE
-
-			if( can_data.invertor.rpm_updated == 1 )
-			{
-					velocity.Float32 = can_data.invertor.motor_rpm.Float32;
-					can_data.invertor.rpm_updated = 0;
-			}
-
-			if( buttons.wheel.cruise_up == BUTTON_IS_PRESSED )
-			{
-				velocity.Float32 += 10.0f;
-				Rising_Edge_Release(	&buttons.wheel.cruise_up,
-										&previous_button_state.wheel.cruise_on);
-			}
-
-			else if( buttons.wheel.cruise_down == BUTTON_IS_PRESSED )
-			{
-				velocity.Float32 -= 10.0f;
-				Rising_Edge_Release(	&buttons.wheel.cruise_down,
-												&previous_button_state.wheel.cruise_down);
-			}
+			Cruise_Control_Mode();
 
 			break;
 
@@ -100,6 +67,55 @@ void motor_control()
 	Transmit_motor_control(velocity, current_reffrence);
 }
 
+
+void Pedal_Mode()
+{
+#if( PIT_TESTING == 1)
+	buttons.panel.drv_forward = BUTTON_IS_PRESSED;
+#endif
+
+	if(buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
+			velocity.Float32 = REGEN_ON_BREAK;
+
+	else if ( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
+			velocity.Float32 = FORWARD_MAX_VELOCITY;
+
+	else if (buttons.panel.drv_reverse == BUTTON_IS_PRESSED)
+			velocity.Float32 = REVERSE_MAX_VELOCITY;
+
+	else // neutral
+	{
+			current_reffrence.Float32 = 0.0f;
+			velocity.Float32 = 0.0f;
+	}
+
+}
+
+void Cruise_Control_Mode()
+{
+	current_reffrence.Float32 = 1.0f; //MAXIMUM CURRENT REFFRENCE
+
+	if( can_data.invertor.rpm_updated == 1 )
+	{
+			velocity.Float32 = can_data.invertor.motor_rpm.Float32;
+			can_data.invertor.rpm_updated = 0;
+	}
+
+	if( buttons.wheel.cruise_up == BUTTON_IS_PRESSED )
+	{
+		velocity.Float32 += 10.0f;
+		Rising_Edge_Release(	&buttons.wheel.cruise_up,
+								&previous_button_state.wheel.cruise_on);
+	}
+
+	else if( buttons.wheel.cruise_down == BUTTON_IS_PRESSED )
+	{
+		velocity.Float32 -= 10.0f;
+		Rising_Edge_Release(	&buttons.wheel.cruise_down,
+								&previous_button_state.wheel.cruise_down);
+	}
+}
+
 void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_cast current_reffrence)
 {
 	static const CAN_TxHeaderTypeDef inv_motor_drive_header =
@@ -111,6 +127,10 @@ void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_c
 	inv_data[1] = (velocity.Uint32 >> 8) & 0xFF;
 	inv_data[2] = (velocity.Uint32 >> 16) & 0xFF;
 	inv_data[3] = (velocity.Uint32 >> 24) & 0xFF;
+
+#if( PIT_TESTING == 1 )
+//	current_reffrence.Float32 = 0.1f;
+#endif
 
 	inv_data[4] = (current_reffrence.Uint32) & 0xFF;
 	inv_data[5] = (current_reffrence.Uint32 >> 8) & 0xFF;
