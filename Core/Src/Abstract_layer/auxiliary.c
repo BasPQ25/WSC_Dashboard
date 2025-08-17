@@ -31,10 +31,9 @@ void auxiliary_control()
 
 	if (buttons.panel.horn == BUTTON_IS_PRESSED)
 		auxiliary_can_data |= AUX_HORN;
-
-	if (buttons.panel.fan = BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_FAN;
-
+//
+//	if (buttons.panel.fan = BUTTON_IS_PRESSED)
+//		auxiliary_can_data |= AUX_FAN;
 
 	HAL_CAN_AddTxMessage(&hcan, &aux_header, &auxiliary_can_data, &aux_mailbox);
 }

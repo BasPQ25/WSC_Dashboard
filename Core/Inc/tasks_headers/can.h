@@ -187,6 +187,7 @@ struct Telemetry_RTC
 void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c//see in tasks/can.c
 void Can_receive_handler(void);
 void Can_transmit_handler(void);
+void pedal_reading_handler(void);
 bool get_bms_state(void);
 void motor_control(void);
 void Cruise_Control_Mode(void);

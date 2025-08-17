@@ -70,7 +70,9 @@ void MAIN_Display(char *buffer)
 		strncpy(drive_state, "PRECRG", sizeof(drive_state));
 		break;
 	case DRIVE:
-		if( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
+		if( buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
+				strncpy(drive_state, "REGEN", sizeof(drive_state));
+		else if( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
 		{
 			if( buttons.wheel.cruise_on == BUTTON_IS_PRESSED )
 				strncpy(drive_state, "CRUISE", sizeof(drive_state));
@@ -78,9 +80,9 @@ void MAIN_Display(char *buffer)
 				strncpy(drive_state, "Dr.FWD", sizeof(drive_state));
 		}
 		else if( buttons.panel.drv_reverse == BUTTON_IS_PRESSED )
-			strncpy(drive_state, "Dr.RVS", sizeof(drive_state));
+				strncpy(drive_state, "Dr.RVS", sizeof(drive_state));
 		else
-			strncpy(drive_state, "NEUTRU", sizeof(drive_state));
+				strncpy(drive_state, "NEUTRU", sizeof(drive_state));
 		break;
 	case ERR:
 		break;

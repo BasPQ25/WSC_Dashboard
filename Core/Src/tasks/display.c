@@ -1,7 +1,7 @@
 #include"main.h"
 
 
-enum display display_state = CAN_ERROR_DISPLAY; // USED FOR SWITCHING DISPLAYS WHEN THE DISPLAY_SWITCH BUTTON IS PRESSED.
+enum display display_state = MAIN_DISPLAY; // USED FOR SWITCHING DISPLAYS WHEN THE DISPLAY_SWITCH BUTTON IS PRESSED.
 extern struct buttons_layout buttons;
 extern struct buttons_layout previous_button_state;
 
@@ -21,7 +21,7 @@ void Display_handler()
 
 	xLastWakeTime = xTaskGetTickCount();
 
-	while ( pdTRUE)
+	while ( pdTRUE )
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
@@ -33,6 +33,8 @@ void Display_handler()
 			Rising_Edge_Release(	&buttons.wheel.display_switch,
 									&previous_button_state.wheel.display_switch);
 		}
+
+		HD44780_Clear();
 
 		switch (display_state)
 		{

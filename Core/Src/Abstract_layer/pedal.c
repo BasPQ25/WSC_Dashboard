@@ -1,15 +1,13 @@
 #include"main.h"
 
 extern ADC_HandleTypeDef hadc1;
-
-#define CONTROL_CURRENT_RAMP 100.0F // in %
-
-static union reinterpret_cast current_reffrence = {0};
-static union reinterpret_cast last_current_reffrence;
+extern uint8_t pedal_noice_cancelling;
+#define NOICE_CANCELLING_PEDAL_LIMIT 200
 
 float convert_pedal_to_current()
 {
 	uint16_t pedal_value = 0;
+	union reinterpret_cast current;
 
 	taskENTER_CRITICAL();
 
@@ -24,19 +22,14 @@ float convert_pedal_to_current()
 
 	taskEXIT_CRITICAL();
 
+		if( pedal_value < NOICE_CANCELLING_PEDAL_LIMIT) pedal_noice_cancelling++;
 		pedal_value = min(pedal_value, PEDAL_MAX);
 		pedal_value = max(pedal_value, PEDAL_MIN);
 
-		last_current_reffrence.Float32 = current_reffrence.Float32;
-
-		current_reffrence.Float32 = (float) (pedal_value - PEDAL_MIN)
+		current.Float32 = (float) (pedal_value - PEDAL_MIN)
 								  / (float) (PEDAL_MAX - PEDAL_MIN);
 
-		if (current_reffrence.Float32 - last_current_reffrence.Float32 >= CONTROL_CURRENT_RAMP)
-		{
-			current_reffrence.Float32 += CONTROL_CURRENT_RAMP;
-		}
-
-		return current_reffrence.Float32;
+		return current.Float32;
 }
+
 

@@ -2,7 +2,7 @@
 
 
 TaskHandle_t display_handle, can_msg_handle, can_transmit_handle,
-		buttons_handle, RTC_handle, buzzer_handle, GPS_handle;
+		buttons_handle, RTC_handle, buzzer_handle, GPS_handle,pedal_reading_handle;
 QueueHandle_t Can_Queue;
 
 extern CAN_HandleTypeDef hcan;
@@ -24,7 +24,7 @@ void config_handler()
 //		vTaskDelete(can_msg_handle);
 //		vTaskDelete(can_transmit_handle);
 //		vTaskDelete(display_handle);
-		vTaskDelete(buttons_handle);
+//		vTaskDelete(buttons_handle);
 		vTaskDelete(buzzer_handle);
 		vTaskDelete(GPS_handle);
 		vTaskDelete(NULL); // DELETS ITSELF;
@@ -34,22 +34,25 @@ void config_handler()
 void Software_config()
 {
 	configASSERT(
-			xTaskCreate((TaskFunction_t) Display_handler,      "Display", 2000,   NULL,  3, &display_handle));
+			xTaskCreate((TaskFunction_t)  Display_handler,      		"Display",  2000,   NULL,  3, &display_handle));
 
 	configASSERT(
-			xTaskCreate((TaskFunction_t) Can_receive_handler,  "Msg",     2000,   NULL,  5, &can_msg_handle));
+			xTaskCreate((TaskFunction_t)  Can_receive_handler,  	    "Msg",      2000,   NULL,  5, &can_msg_handle));
 
 	configASSERT(
-			xTaskCreate((TaskFunction_t) Can_transmit_handler, "TX",      1000,   NULL,  9, &can_transmit_handle));
+			xTaskCreate((TaskFunction_t)  Can_transmit_handler,        	 "TX",      1000,   NULL,  8, &can_transmit_handle));
 
 	configASSERT(
-			xTaskCreate((TaskFunction_t ) Buttons_handler,     "Buttons", 1000,   NULL,  7, &buttons_handle));
+			xTaskCreate((TaskFunction_t)  pedal_reading_handler,       	 "pedal",    200,    NULL,  9, &pedal_reading_handle));
 
 	configASSERT(
-		    xTaskCreate((TaskFunction_t) Buzzer_handler,       "Buzzer",  200,    NULL,  8, &buzzer_handle));
+			xTaskCreate((TaskFunction_t ) Buttons_handler,     			 "Buttons", 1000,   NULL,  7, &buttons_handle));
 
 	configASSERT(
-		    xTaskCreate((TaskFunction_t) GPS_handler,          "GPS",     1000,   NULL,  4, &GPS_handle));
+		    xTaskCreate((TaskFunction_t)  Buzzer_handler,       	     "Buzzer",   200,    NULL,  8, &buzzer_handle));
+
+	configASSERT(
+		    xTaskCreate((TaskFunction_t)  GPS_handler,          		 "GPS",     1000,   NULL,  4, &GPS_handle));
 
 	vSemaphoreCreateBinary( GPS_Semaphore );
 

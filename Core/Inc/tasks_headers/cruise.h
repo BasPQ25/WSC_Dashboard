@@ -9,6 +9,7 @@
 #define INC_TASKS_HEADERS_CRUISE_H_
 
 float convert_pedal_to_current();
+void moving_average();
 
 enum Driving_Mode
 {
