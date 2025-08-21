@@ -1,6 +1,5 @@
 #include"main.h"
 
-
 extern I2C_HandleTypeDef hi2c1;
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
@@ -10,7 +9,7 @@ extern struct Modules_Activity ActivityCheck;
 extern struct buttons_layout buttons;
 extern CAN_HandleTypeDef hcan;
 
-struct pop_up_error pop_up_error_condition;
+struct pop_up_error pop_up_error_condition = {0};
 
 
 void Display_Init()
@@ -30,9 +29,10 @@ void MAIN_Display(char *buffer)
 			can_data.bms.maximum_cell_voltage);
 	HD44780_PrintStr(buffer);
 
+	can_data.bms.State_Of_Charge = 0;
 	//second row
 	HD44780_SetCursor(0, 1);
-	snprintf(buffer, 21, "%4.1f |B: %3.0f | %4.3f",
+	snprintf(buffer, 21, "%4.1f |B %4.1f | %4.3f",
 			can_data.bms.minimum_cell_temperature,
 			can_data.bms.State_Of_Charge,
 			can_data.bms.minimum_cell_voltage);
@@ -49,7 +49,7 @@ void MAIN_Display(char *buffer)
 	float bms_power = can_data.bms.battery_current.Float32 * can_data.bms.battery_voltage.Float32;
 
 	HD44780_SetCursor(0, 2);
-	snprintf(buffer, 21, "I:  %5.1f BM:  %5.1f", invertor_power, bms_power);
+	snprintf(buffer, 21, "I: %5.1f BM: %5.1f", invertor_power, bms_power);
 	HD44780_PrintStr(buffer);
 
 	//forth row
@@ -59,7 +59,6 @@ void MAIN_Display(char *buffer)
 	char drive_state[7] = "  IDLE";
 
 	can_data.bms.state = DRIVE;
-	buttons.panel.drv_forward = BUTTON_IS_PRESSED;
 
 	switch(can_data.bms.state)
 	{
@@ -71,16 +70,16 @@ void MAIN_Display(char *buffer)
 		break;
 	case DRIVE:
 		if( buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
-				strncpy(drive_state, "REGEN", sizeof(drive_state));
+				strncpy(drive_state, "REGEN ", sizeof(drive_state));
 		else if( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
 		{
 			if( buttons.wheel.cruise_on == BUTTON_IS_PRESSED )
 				strncpy(drive_state, "CRUISE", sizeof(drive_state));
 			else
-				strncpy(drive_state, "Dr.FWD", sizeof(drive_state));
+				strncpy(drive_state, "FORWRD", sizeof(drive_state));
 		}
 		else if( buttons.panel.drv_reverse == BUTTON_IS_PRESSED )
-				strncpy(drive_state, "Dr.RVS", sizeof(drive_state));
+				strncpy(drive_state, "REVERS", sizeof(drive_state));
 		else
 				strncpy(drive_state, "NEUTRU", sizeof(drive_state));
 		break;
@@ -167,32 +166,10 @@ void BOOT_Display(char* buffer)
 
 }
 
-void Can_Error_Display(char* buffer)
-{
-	uint8_t tec = (uint8_t)((hcan.Instance->ESR >> 16) & 0xFF);
-	uint8_t rec = (uint8_t)((hcan.Instance->ESR) & 0xFF);
-
-	HD44780_SetCursor(0, 0);
-	snprintf(buffer,21,"TEC:  %d", tec);
-	HD44780_PrintStr(buffer);
-
-	HD44780_SetCursor(0, 1);
-	snprintf(buffer,21,"REC:  %d", rec);
-	HD44780_PrintStr(buffer);
-
-	HD44780_SetCursor(0, 2);
-	snprintf(buffer,"SWO:  %d", can_data.invertor.software_overcurrent_count);
-	HD44780_PrintStr(buffer);
-
-
-}
 
 void Pop_Up_Error_Display(char* buffer)
 {
-	if( pop_up_error_condition.regen_break_fault == TRUE )
-	{
 
-	}
 }
 
 char* GetString(uint8_t status)

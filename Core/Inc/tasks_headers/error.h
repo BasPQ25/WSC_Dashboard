@@ -29,4 +29,6 @@ struct pop_up_error
 };
 
 
+void React_To_Error(uint8_t* fault);
+
 #endif /* INC_TASKS_HEADERS_ERROR_H_ */

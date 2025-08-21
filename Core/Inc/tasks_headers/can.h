@@ -88,10 +88,10 @@ struct Data_aquisition_can
  *  RX = INVERTOR RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
  *  TX = INVERTOR TRANSMITS A MESSAGE, SO DASHBOARD/VCU RECEIVES
  */
-#define INV_RX_BASE_ADDR           0X500
-#define INV_RX_MOTOR_DRIVE         ( INV_RX_BASE_ADDR + 0x01 ) // 100ms
-#define INV_RX_MOTOR_POWER_COMMAND ( INV_RX_BASE_ADDR + 0X02 ) // 100 ms (NOT USED)
-#define INV_RX_RESET_COMMAND       ( INV_RX_BASE_ADDR + 0X03 ) // SOFTWARE OVERCURRENT COOMAND
+#define INV_RX_BASE_ADDR            0X500
+#define INV_RX_MOTOR_DRIVE          ( INV_RX_BASE_ADDR + 0x01 ) // 100ms
+#define INV_RX_MOTOR_POWER_COMMAND  ( INV_RX_BASE_ADDR + 0X02 ) // 100 ms (NOT USED)
+#define INV_RX_RESET_COMMAND        ( INV_RX_BASE_ADDR + 0X03 ) // SOFTWARE OVERCURRENT COOMAND
 
 #define INV_TX_BASE_ADDR            0x400
 #define INV_TX_STATUS_INFO          ( INV_TX_BASE_ADDR + 0X01 ) // 200 ms
@@ -134,20 +134,20 @@ enum State {
  *  RX = MPPT RECEIVES A MESSAGE, SO DASHBOARD/VCU TRANSMITS
  *  TX = MPPT TRANSMITS A MESSAGE, SO DASHBOARD/VCU RECEIVES
  */
-#define MPPT1_TX_ADDR ( MPPT_BASE_ADDR )
-#define MPPT2_TX_ADDR ( MPPT_BASE_ADDR + 0X010 )
-#define MPPT3_TX_ADDR ( MPPT_BASE_ADDR + 0X020 )
-#define MPPT4_TX_ADDR ( MPPT_BASE_ADDR + 0x030 )
+#define MPPT1_TX_ADDR              ( MPPT_BASE_ADDR )
+#define MPPT2_TX_ADDR              ( MPPT_BASE_ADDR + 0X010 )
+#define MPPT3_TX_ADDR              ( MPPT_BASE_ADDR + 0X020 )
+#define MPPT4_TX_ADDR              ( MPPT_BASE_ADDR + 0x030 )
 
-#define MPPT1_TX_POWER_MEASUREMENT (MPPT1_TX_ADDR + 0X000) // 500 ms
-#define MPPT2_TX_POWER_MEASUREMENT (MPPT2_TX_ADDR + 0X000) // 500 ms
-#define MPPT3_TX_POWER_MEASUREMENT (MPPT3_TX_ADDR + 0X000) // 500 ms
-#define MPPT4_TX_POWER_MEASUREMENT (MPPT4_TX_ADDR + 0x000) // 500 ms
+#define MPPT1_TX_POWER_MEASUREMENT (MPPT1_TX_ADDR + 0X000 ) // 500 ms
+#define MPPT2_TX_POWER_MEASUREMENT (MPPT2_TX_ADDR + 0X000 ) // 500 ms
+#define MPPT3_TX_POWER_MEASUREMENT (MPPT3_TX_ADDR + 0X000 ) // 500 ms
+#define MPPT4_TX_POWER_MEASUREMENT (MPPT4_TX_ADDR + 0x000 ) // 500 ms
 
-#define MPPT1_TX_STATUS ( MPPT1_TX_ADDR + 0X01) // 1 second
-#define MPPT2_TX_STATUS ( MPPT2_TX_ADDR + 0X01) // 1 second
-#define MPPT3_TX_STATUS ( MPPT3_TX_ADDR + 0X01) // 1 second
-#define MPPT4_TX_STATUS ( MPPT4_TX_ADDR + 0X01) // 1 second
+#define MPPT1_TX_STATUS            ( MPPT1_TX_ADDR + 0X01 ) // 1 second
+#define MPPT2_TX_STATUS            ( MPPT2_TX_ADDR + 0X01 ) // 1 second
+#define MPPT3_TX_STATUS            ( MPPT3_TX_ADDR + 0X01 ) // 1 second
+#define MPPT4_TX_STATUS            ( MPPT4_TX_ADDR + 0X01 ) // 1 second
 
 /*MPPT SIGNAL END HERE */
 
@@ -155,14 +155,14 @@ enum State {
 
 #define AUXILIARY_CONTROL 0X701
 
-#define AUX_BLINK_LEFT 0x01
+#define AUX_BLINK_LEFT  0x01
 #define AUX_BLINK_RIGHT 0x02
-#define AUX_FAN 0x04
+#define AUX_FAN         0x04
 #define AUX_BREAK_LIGHT 0x08
-#define AUX_HORN 0x10
-#define AUX_REAR_LIGHT 0x20
-#define AUX_CAMERA 0x40
-#define AUX_HEAD_LIGHTS 0x80
+#define AUX_HORN        0x10
+#define AUX_AVARIE      0x20
+#define AUX_CAMERA      0x40
+#define AUX_ALL_LIGHTS  0x80
 
 #define AUXILIARY_TX_ACTIVITY_CHECK 0x700
 
@@ -191,6 +191,8 @@ void pedal_reading_handler(void);
 bool get_bms_state(void);
 void motor_control(void);
 void Cruise_Control_Mode(void);
+void Solar_Only_Mode(void);
+void Ideal_Cruise_Control(void);
 void Pedal_Mode(void);
 void auxiliary_control(void);
 uint8_t Fan_Control(void);

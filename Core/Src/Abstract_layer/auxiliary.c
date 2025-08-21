@@ -12,28 +12,29 @@ void auxiliary_control()
 	static uint32_t aux_mailbox;
 
 	if (buttons.wheel.blink_left == BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_BLINK_LEFT;
+		auxiliary_can_data |= AUX_BLINK_LEFT;  //MERGE
 
 	if (buttons.wheel.blink_right == BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_BLINK_RIGHT;
+		auxiliary_can_data |= AUX_BLINK_RIGHT; //MERGE
 
-	if (buttons.pedal.brake_lights == BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_BREAK_LIGHT;
+	if (buttons.pedal.brake_lights == BUTTON_IS_PRESSED ||
+		buttons.wheel.brake_swap   == BUTTON_IS_PRESSED )
+		auxiliary_can_data |= AUX_BREAK_LIGHT; //MERGE DOAR BRAKE_SWAP
 
 	if (buttons.panel.camera == BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_CAMERA;
+		auxiliary_can_data |= AUX_CAMERA; //MERGEEE
 
-	if (buttons.panel.head_lights == BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_HEAD_LIGHTS;
+	if (buttons.panel.all_lights == BUTTON_IS_PRESSED)
+		auxiliary_can_data |= AUX_ALL_LIGHTS; // MERGE
 
-	if (buttons.panel.rear_lights == BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_REAR_LIGHT;
+	if (buttons.wheel.avarie == BUTTON_IS_PRESSED)
+		auxiliary_can_data |= AUX_AVARIE; // MERGEE
 
-	if (buttons.panel.horn == BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_HORN;
-//
-//	if (buttons.panel.fan = BUTTON_IS_PRESSED)
-//		auxiliary_can_data |= AUX_FAN;
+//	if (buttons.wheel.cruise_up == BUTTON_IS_PRESSED)
+//		auxiliary_can_data |= AUX_HORN; //NOT TESTED
+
+	if (buttons.panel.fan = BUTTON_IS_PRESSED)
+		auxiliary_can_data |= AUX_FAN;
 
 	HAL_CAN_AddTxMessage(&hcan, &aux_header, &auxiliary_can_data, &aux_mailbox);
 }

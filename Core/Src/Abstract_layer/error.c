@@ -6,6 +6,9 @@ struct Modules_Activity ActivityCheck= { 0 };
 uint8_t Can_error_counter = 0;
 static uint8_t can_error_count_500ms = 0;
 
+extern struct pop_up_error pop_up_error_condition;
+extern enum display display_state;
+//NOT USED AND NOT EFFICIENT AT ALL, BUT JUST IN CASE
 void Can_error_checking( void )
 {
 	if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan) == 0 || HAL_CAN_GetError(&hcan) == HAL_CAN_ERROR_BOF ) //check if the FIFO is blocked or Bus off
@@ -39,6 +42,12 @@ void Can_error_checking( void )
 		}
 	}
 	else can_error_count_500ms = 0;
+}
+void React_To_Error(uint8_t* fault)
+{
+	*fault = TRUE;
+
+	display_state = POP_UP_ERROR_DISPLAY;
 }
 
 

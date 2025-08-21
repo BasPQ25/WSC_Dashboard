@@ -25,7 +25,7 @@ struct right_panel
 	uint8_t horn;
 	uint8_t rear_lights;
 	uint8_t camera;
-	uint8_t head_lights;
+	uint8_t all_lights;
 };
 
 struct steering_wheel

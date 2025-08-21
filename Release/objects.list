@@ -21,6 +21,7 @@
 "./Core/Src/tasks/can_receive.o"
 "./Core/Src/tasks/can_transmit.o"
 "./Core/Src/tasks/display.o"
+"./Core/Src/tasks/pedal_reading.o"
 "./Core/Startup/startup_stm32f303retx.o"
 "./Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.o"
 "./Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_adc.o"

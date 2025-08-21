@@ -11,7 +11,8 @@ C_SRCS += \
 ../Core/Src/tasks/buzzer.c \
 ../Core/Src/tasks/can_receive.c \
 ../Core/Src/tasks/can_transmit.c \
-../Core/Src/tasks/display.c 
+../Core/Src/tasks/display.c \
+../Core/Src/tasks/pedal_reading.c 
 
 OBJS += \
 ./Core/Src/tasks/GPS.o \
@@ -20,7 +21,8 @@ OBJS += \
 ./Core/Src/tasks/buzzer.o \
 ./Core/Src/tasks/can_receive.o \
 ./Core/Src/tasks/can_transmit.o \
-./Core/Src/tasks/display.o 
+./Core/Src/tasks/display.o \
+./Core/Src/tasks/pedal_reading.o 
 
 C_DEPS += \
 ./Core/Src/tasks/GPS.d \
@@ -29,7 +31,8 @@ C_DEPS += \
 ./Core/Src/tasks/buzzer.d \
 ./Core/Src/tasks/can_receive.d \
 ./Core/Src/tasks/can_transmit.d \
-./Core/Src/tasks/display.d 
+./Core/Src/tasks/display.d \
+./Core/Src/tasks/pedal_reading.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -39,7 +42,7 @@ Core/Src/tasks/%.o Core/Src/tasks/%.su Core/Src/tasks/%.cyclo: ../Core/Src/tasks
 clean: clean-Core-2f-Src-2f-tasks
 
 clean-Core-2f-Src-2f-tasks:
-	-$(RM) ./Core/Src/tasks/GPS.cyclo ./Core/Src/tasks/GPS.d ./Core/Src/tasks/GPS.o ./Core/Src/tasks/GPS.su ./Core/Src/tasks/Software_config.cyclo ./Core/Src/tasks/Software_config.d ./Core/Src/tasks/Software_config.o ./Core/Src/tasks/Software_config.su ./Core/Src/tasks/buttons.cyclo ./Core/Src/tasks/buttons.d ./Core/Src/tasks/buttons.o ./Core/Src/tasks/buttons.su ./Core/Src/tasks/buzzer.cyclo ./Core/Src/tasks/buzzer.d ./Core/Src/tasks/buzzer.o ./Core/Src/tasks/buzzer.su ./Core/Src/tasks/can_receive.cyclo ./Core/Src/tasks/can_receive.d ./Core/Src/tasks/can_receive.o ./Core/Src/tasks/can_receive.su ./Core/Src/tasks/can_transmit.cyclo ./Core/Src/tasks/can_transmit.d ./Core/Src/tasks/can_transmit.o ./Core/Src/tasks/can_transmit.su ./Core/Src/tasks/display.cyclo ./Core/Src/tasks/display.d ./Core/Src/tasks/display.o ./Core/Src/tasks/display.su
+	-$(RM) ./Core/Src/tasks/GPS.cyclo ./Core/Src/tasks/GPS.d ./Core/Src/tasks/GPS.o ./Core/Src/tasks/GPS.su ./Core/Src/tasks/Software_config.cyclo ./Core/Src/tasks/Software_config.d ./Core/Src/tasks/Software_config.o ./Core/Src/tasks/Software_config.su ./Core/Src/tasks/buttons.cyclo ./Core/Src/tasks/buttons.d ./Core/Src/tasks/buttons.o ./Core/Src/tasks/buttons.su ./Core/Src/tasks/buzzer.cyclo ./Core/Src/tasks/buzzer.d ./Core/Src/tasks/buzzer.o ./Core/Src/tasks/buzzer.su ./Core/Src/tasks/can_receive.cyclo ./Core/Src/tasks/can_receive.d ./Core/Src/tasks/can_receive.o ./Core/Src/tasks/can_receive.su ./Core/Src/tasks/can_transmit.cyclo ./Core/Src/tasks/can_transmit.d ./Core/Src/tasks/can_transmit.o ./Core/Src/tasks/can_transmit.su ./Core/Src/tasks/display.cyclo ./Core/Src/tasks/display.d ./Core/Src/tasks/display.o ./Core/Src/tasks/display.su ./Core/Src/tasks/pedal_reading.cyclo ./Core/Src/tasks/pedal_reading.d ./Core/Src/tasks/pedal_reading.o ./Core/Src/tasks/pedal_reading.su
 
 .PHONY: clean-Core-2f-Src-2f-tasks
 

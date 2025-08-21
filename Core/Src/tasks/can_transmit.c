@@ -25,9 +25,6 @@ void Can_transmit_handler() // 100 MS
 	{
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-/********** ERROR CHECKING BEFORE TRANSMITIING THE MESSAGES ***********/
-//		Can_error_checking(); //AUTOMATIC BUS-OFF MANAGEMENT ENABLED, MIGHT BE BETTER WITH THAT SOLUTION
-
 /********** BATTERY MANAGEMENT SYSTEM CONTROL ***********/
 		bms_state = get_bms_state();
 
@@ -42,10 +39,7 @@ void Can_transmit_handler() // 100 MS
 		auxiliary_control();
 	}
 }
-
-/* THE MOST IMPORTANT INFORMATION WAS TRASNMITTED, MEANING THE NEXT ONE IS THE GPS
- * THIS FUNCTION WORKS ONLY AFTER THE BMS, INV OR AUXILIARY DATA WAS TRASMITTED
- */
+/* THE MOST IMPORTANT INFORMATION WAS TRASNMITTED, MEANING THE NEXT ONE IS THE GPS* THIS FUNCTION WORKS ONLY AFTER THE BMS, INV OR AUXILIARY DATA WAS TRASMITT */
 void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan) {
 
 	static const CAN_TxHeaderTypeDef GPS_header =

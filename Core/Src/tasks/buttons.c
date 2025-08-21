@@ -8,6 +8,9 @@ struct buttons_layout previous_button_state = {FALSE};
 
 extern struct steering_wheel Wheel_Adress;
 extern uint32_t max_temp_value;
+extern union reinterpret_cast current_reffrence;
+
+extern struct pop_up_error pop_up_error_condition;
 /*
  * FREERTOS TASK FOR READING THE BUTTONS.
  * IT RUNS EVERY 50 MS.
@@ -41,8 +44,8 @@ void Buttons_handler()
 									min(buttons.panel.drv_reverse + 1, BUTTON_IS_PRESSED) : 0;
 
 		/********** AUXILIARY RELATED BUTTONS ***********/
-		buttons.panel.head_lights  = (HAL_GPIO_ReadPin(GPIOB, INPUT_HEAD_LIGHTS_Pin) | HAL_GPIO_ReadPin(GPIOB, INPUT_ALL_LIGHTS_Pin)) ?
-									min(buttons.panel.head_lights + 1, BUTTON_IS_PRESSED) : 0;
+		buttons.panel.all_lights  = (HAL_GPIO_ReadPin(GPIOB, INPUT_HEAD_LIGHTS_Pin) | HAL_GPIO_ReadPin(GPIOB, INPUT_ALL_LIGHTS_Pin)) ?
+									min(buttons.panel.all_lights + 1, BUTTON_IS_PRESSED) : 0;
 
 		buttons.panel.rear_lights  = (HAL_GPIO_ReadPin(GPIOB, INPUT_REAR_LIGHTS_Pin) | HAL_GPIO_ReadPin(GPIOB, INPUT_ALL_LIGHTS_Pin)) ?
 									min(buttons.panel.rear_lights + 1, BUTTON_IS_PRESSED) : 0;
@@ -50,19 +53,22 @@ void Buttons_handler()
 		buttons.panel.camera       = (HAL_GPIO_ReadPin(GPIOC, INPUT_CAMERA_Pin)) ?
 									min(buttons.panel.camera + 1, BUTTON_IS_PRESSED) : 0;
 
-		buttons.panel.horn         = (HAL_GPIO_ReadPin(GPIOA, INPUT_HORN_Pin)) ?
+		buttons.panel.horn         = (HAL_GPIO_ReadPin(GPIOB, INPUT_HORN_Pin)) ?
 									min(buttons.panel.horn + 1, BUTTON_IS_PRESSED) : 0;
 
-		buttons.panel.fan          =  Fan_Control();
+		buttons.panel.fan 		   = (HAL_GPIO_ReadPin(GPIOA, INPUT_FAN_Pin)) ?
+									min( buttons.panel.fan + 1, BUTTON_IS_PRESSED) : 0;
 
 		/********** MECHANICAL BRAKE ***********/
-		buttons.pedal.brake_lights = (HAL_GPIO_ReadPin(GPIOB, INPUT_BRAKE_LIGHTS_Pin)) ?
+		buttons.pedal.brake_lights = (!HAL_GPIO_ReadPin(GPIOB, INPUT_BRAKE_LIGHTS_Pin)) ?       //MECHANICAL BRAKE IS PULLED UP
 									min(buttons.pedal.brake_lights + 1, BUTTON_IS_PRESSED) : 0;
 
 /********** STEERING WHEEL BUTTONS ***********/
-
 		buttons.wheel.brake_swap     = Steering_Wheel_Reading(Wheel_Adress.brake_swap)?
 									min(buttons.wheel.brake_swap + 1, BUTTON_IS_PRESSED) : 0;
+
+		buttons.wheel.cruise_up	     = Steering_Wheel_Reading(Wheel_Adress.cruise_up)?
+									min(buttons.wheel.cruise_up + 1, BUTTON_IS_PRESSED)  : 0;
 
 		Rising_Edge_Toggle(	&buttons.wheel.blink_left,
 				 	 	 	Wheel_Adress.blink_left,
@@ -95,9 +101,9 @@ void Buttons_handler()
 							&previous_button_state.wheel.cruise_down);
 
 		/*THIS BUTTON IS RELEASED IN THE invertor.c FILE AT THE LINE 86*/
-		Rising_Edge_Press(	&buttons.wheel.cruise_up,
-							Wheel_Adress.cruise_up,
-							&previous_button_state.wheel.cruise_up);
+//		Rising_Edge_Press(	&buttons.wheel.cruise_up,
+//							Wheel_Adress.cruise_up,
+//							&previous_button_state.wheel.cruise_up);
 	}
 }
 

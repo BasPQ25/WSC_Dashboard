@@ -57,7 +57,9 @@ void Can_receive_handler()
 
 		case BMS_TX_SOC:
 
-			can_data.bms.State_Of_Charge = ((msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4]);
+			uint32_t SOC = ((msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4]);
+
+			can_data.bms.State_Of_Charge = (float)(SOC / 100);
 
 			break;
 
@@ -98,8 +100,6 @@ void Can_receive_handler()
 			can_data.invertor.motor_velocity.Uint32 = (msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4];
 
 			can_data.invertor.motor_rpm.Uint32 =      (msg.data.byte[3] << 24) | (msg.data.byte[2] << 16) | (msg.data.byte[1] << 8) | msg.data.byte[0];
-
-			can_data.invertor.rpm_updated = 1; // Find this variable used in invertor.c function motor_control_Prohelion_cruise
 
 			break;
 

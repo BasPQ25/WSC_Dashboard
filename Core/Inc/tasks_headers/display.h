@@ -19,7 +19,6 @@ void MPPT_Display     		(char* buffer);
 void BOOT_Display     		(char* buffer);
 void Can_Error_Display		(char* buffer);
 void Pop_Up_Error_Display   (char* buffer);
-void Pop_Up_Error_Display   (char* buffer);
 
 char* GetString(uint8_t status);
 char* GetSign(uint8_t status_left, uint8_t status_right, uint8_t status_avarie);
@@ -29,7 +28,6 @@ enum display
 	BOOT_DISPLAY = 0,
 	MAIN_DISPLAY,
 	MPPT_DISPLAY,
-	CAN_ERROR_DISPLAY,
 	MAX_DISPLAY,
 	POP_UP_ERROR_DISPLAY
 

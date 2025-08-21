@@ -4,7 +4,7 @@
 #define REVERSE_MAX_VELOCITY -2000.0F
 #define REGEN_ON_BREAK 0.0F
 
-#define SAFETY_CUT_CRUISE_CONTROL 0.3F //IF THE DRIVER PRESSES THE PEDAL MORE THAN THIS POINT, THE CRUISE WILL STOP
+#define SAFETY_CUT_CRUISE_CONTROL 0.1F //IF THE DRIVER PRESSES THE PEDAL MORE THAN THIS POINT, THE CRUISE WILL STOP
 #define CRUISE_UP_VALUE   10.0f
 #define CRUISE_DOWN_VALUE 10.0f
 
@@ -30,8 +30,8 @@ void motor_control()
 
 	if( buttons.wheel.cruise_on == BUTTON_IS_PRESSED )
 	{
-		if( 	current_reffrence.Float32   <  SAFETY_CUT_CRUISE_CONTROL ||
-				buttons.wheel.brake_swap   !=  BUTTON_IS_PRESSED         ||
+		if( 	current_reffrence.Float32   <  SAFETY_CUT_CRUISE_CONTROL &&
+				buttons.wheel.brake_swap   !=  BUTTON_IS_PRESSED         &&
 				buttons.pedal.brake_lights !=  BUTTON_IS_PRESSED)
 		{
 			Drive_Mode = CRUISE_CONTROL_MODE;
@@ -40,7 +40,6 @@ void motor_control()
 				Cruise_Set_Point = can_data.invertor.motor_rpm.Float32;
 				Cruise_Set_Flag = TRUE;
 			}
-
 		}
 		else
 		{
@@ -50,7 +49,6 @@ void motor_control()
 			Cruise_Set_Flag = FALSE;
 		}
 	}
-
 	else Drive_Mode = PEDAL_ACCELERATION_MODE;
 
 	switch( Drive_Mode )
@@ -70,6 +68,14 @@ void motor_control()
 		case SOLAR_ONLY_MODE:
 
 			//NOT IMPLEMENTED YET, FOR FUTURE IMPROVEMENTS
+			Solar_Only_Mode();
+
+		case IDEAL_CRUISE_CONTROL:
+
+			Ideal_Cruise_Control();
+
+			break;
+
 		break;
 	}
 
@@ -80,10 +86,6 @@ void motor_control()
 
 void Pedal_Mode()
 {
-#if( PIT_TESTING == 1)
-	buttons.panel.drv_forward = BUTTON_IS_PRESSED;
-#endif
-
 	if(buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
 			velocity.Float32 = REGEN_ON_BREAK;
 
@@ -103,7 +105,7 @@ void Pedal_Mode()
 
 void Cruise_Control_Mode()
 {
-	current_reffrence.Float32 = 0.9f; //MAXIMUM CURRENT REFFRENCE
+	current_reffrence.Float32 = 1.0f; //MAXIMUM CURRENT REFFRENCE
 
 	if( buttons.wheel.cruise_up == BUTTON_IS_PRESSED )
 	{
@@ -120,6 +122,16 @@ void Cruise_Control_Mode()
 	}
 
 	velocity.Float32 = Cruise_Set_Point;
+}
+
+void Solar_Only_Mode()
+{
+
+}
+
+void Ideal_Cruise_Control()
+{
+
 }
 
 void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_cast current_reffrence)

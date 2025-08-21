@@ -28,13 +28,12 @@ void Display_handler()
 		//THIS BUTTON IS PRESSED IN buttons.c  at the STEERING WHEEL section(line 49)
 		if(buttons.wheel.display_switch == BUTTON_IS_PRESSED)
 		{
-			if( ++display_state == MAX_DISPLAY ) display_state = BOOT_DISPLAY; // show next display
+			if( ++display_state == MAX_DISPLAY )         display_state = BOOT_DISPLAY; // show next display
+			if( display_state   == POP_UP_ERROR_DISPLAY) display_state = MAIN_DISPLAY;
 
 			Rising_Edge_Release(	&buttons.wheel.display_switch,
 									&previous_button_state.wheel.display_switch);
 		}
-
-		HD44780_Clear();
 
 		switch (display_state)
 		{
@@ -54,12 +53,6 @@ void Display_handler()
 		case MPPT_DISPLAY:
 
 			MPPT_Display(buffer);
-
-			break;
-
-		case CAN_ERROR_DISPLAY:
-
-			Can_Error_Display(buffer);
 
 			break;
 
